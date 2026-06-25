@@ -27,7 +27,7 @@ function GasPage() {
   useEffect(() => { setMounted(true); startSimTicker(); }, []);
 
   if (!mounted) {
-    return <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground text-sm font-mono">Loading plant…</div>;
+    return <div className="flex h-[100dvh] items-center justify-center bg-background text-muted-foreground text-sm font-mono">Loading plant…</div>;
   }
   return <GasPageInner tab={tab} setTab={setTab} />;
 }
