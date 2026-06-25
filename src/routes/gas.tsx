@@ -23,6 +23,7 @@ type Tab = "plant" | "control" | "sim" | "quiz";
 
 function GasPage() {
   const [tab, setTab] = useState<Tab>("plant");
+  useEffect(() => { startSimTicker(); }, []);
   const allAlarms = useSim((s) => s.alarms);
   const alarms = allAlarms.filter((a) => !a.ack);
   const critical = alarms.find((a) => a.level === "critical");
