@@ -85,7 +85,7 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       </main>
 
       {/* Mobile bottom tabs */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 grid grid-cols-4 border-t border-border bg-background/95 backdrop-blur sm:hidden">
+      <nav className="z-20 grid shrink-0 grid-cols-4 border-t border-border bg-background/95 backdrop-blur sm:hidden">
         {([
           ["plant", "Plant", Gauge],
           ["control", "Control", Cpu],
