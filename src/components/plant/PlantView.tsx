@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useSim, mA, levelOf } from "@/lib/sim/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
 const colorFor = (lvl: ReturnType<typeof levelOf>) =>
   lvl === "critical" ? "var(--danger)" : lvl === "high" ? "var(--warning)" : "var(--success)";
@@ -8,104 +9,197 @@ const colorFor = (lvl: ReturnType<typeof levelOf>) =>
 export function PlantView() {
   const s = useSim();
   const select = useSim((s) => s.setSelected);
+  const [zoom, setZoom] = useState(1);
 
   const wellLvl = levelOf(s.wellPressure, 60, 110, 40, 130);
   const sepLvlA = levelOf(s.sepLevel, 20, 80, 10, 90);
   const dischLvl = levelOf(s.discharge, 50, 120, 30, 140);
-  const tempLvl = levelOf(s.compTemp, 50, 110, 40, 130);
+
+  // pipe paths (M ... L ...) — IDs referenced by particle animateMotion
+  const pipes = {
+    p1: "M 130 280 L 290 280",                          // well -> separator
+    p2: "M 470 260 L 600 260 L 720 260",                // separator gas -> FV -> compressor
+    p3: "M 870 260 L 960 260 L 960 400",                // compressor -> treatment
+    p4: "M 470 360 L 600 360 L 600 470 L 770 470",     // separator liquid -> LV drain
+    p5: "M 600 320 L 600 380",                          // recycle PV from discharge to suction (visual)
+  };
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg border border-border bg-[#0d111c]">
-      <svg viewBox="0 0 1000 560" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+    <div className="relative h-full w-full overflow-hidden bg-[#0a0e1a]">
+      <svg viewBox="0 0 1100 620" className="h-full w-full" preserveAspectRatio="xMidYMid meet" style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform .2s" }}>
         <defs>
           <linearGradient id="metal" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#3a4258" />
-            <stop offset="0.5" stopColor="#1c2235" />
+            <stop offset="0" stopColor="#4a5470" />
+            <stop offset="0.5" stopColor="#222a40" />
             <stop offset="1" stopColor="#0e1322" />
           </linearGradient>
-          <linearGradient id="liquid" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#ff8c00" />
-            <stop offset="1" stopColor="#7a3a00" />
+          <linearGradient id="vessel" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="#1a2030" />
+            <stop offset="0.4" stopColor="#4a5470" />
+            <stop offset="0.6" stopColor="#4a5470" />
+            <stop offset="1" stopColor="#1a2030" />
           </linearGradient>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M40 0H0V40" fill="none" stroke="#1a2030" strokeWidth="0.5" />
+          <linearGradient id="liquid" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#ffa64d" />
+            <stop offset="1" stopColor="#6a2e00" />
+          </linearGradient>
+          <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+            <path d="M50 0H0V50" fill="none" stroke="#161c2c" strokeWidth="0.8" />
           </pattern>
+          {/* invisible motion paths */}
+          <path id="mp1" d={pipes.p1} />
+          <path id="mp2" d={pipes.p2} />
+          <path id="mp3" d={pipes.p3} />
+          <path id="mp4" d={pipes.p4} />
         </defs>
-        <rect width="1000" height="560" fill="url(#grid)" />
+        <rect width="1100" height="620" fill="url(#grid)" />
 
-        {/* Pipelines */}
-        <Pipe d="M 130 200 L 260 200" color={colorFor(wellLvl)} />
-        <Pipe d="M 410 240 L 540 240 L 540 320" color={colorFor(sepLvlA)} />
-        <Pipe d="M 410 200 L 540 200 L 660 200" color={colorFor(wellLvl)} />
-        <Pipe d="M 780 200 L 880 200 L 880 320" color={colorFor(dischLvl)} />
-        <Pipe d="M 720 380 L 720 440" color={colorFor(sepLvlA)} />
+        {/* Pipelines (thicker) */}
+        <Pipe d={pipes.p1} color={colorFor(wellLvl)} />
+        <Pipe d={pipes.p2} color={colorFor(wellLvl)} />
+        <Pipe d={pipes.p3} color={colorFor(dischLvl)} />
+        <Pipe d={pipes.p4} color={colorFor(sepLvlA)} />
 
-        {/* Well Head */}
+        {/* Flow particles — visualise gas direction */}
+        <FlowParticles href="#mp1" color={colorFor(wellLvl)} count={4} dur={3} />
+        <FlowParticles href="#mp2" color={colorFor(wellLvl)} count={5} dur={2.6} />
+        <FlowParticles href="#mp3" color={colorFor(dischLvl)} count={5} dur={2.4} />
+        <FlowParticles href="#mp4" color="#ffa64d" count={3} dur={4} liquid />
+
+        {/* ===== Well Head ===== */}
         <g onClick={() => select("well")} className="cursor-pointer">
-          <rect x="80" y="180" width="50" height="180" fill="url(#metal)" stroke="#2a3148" />
-          <rect x="70" y="140" width="70" height="40" rx="4" fill="url(#metal)" stroke="#2a3148" />
-          <circle cx="105" cy="160" r="8" fill={colorFor(wellLvl)} className="pulse-glow" style={{ color: colorFor(wellLvl) }} />
-          <text x="105" y="395" textAnchor="middle" className="scada-value" fill="#9aa3b8" fontSize="11">WH-101</text>
-          <text x="105" y="415" textAnchor="middle" className="scada-value" fill={colorFor(wellLvl)} fontSize="13">{s.wellPressure.toFixed(1)} bar</text>
+          <rect x="55" y="240" width="80" height="220" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Christmas tree */}
+          <rect x="40" y="170" width="110" height="20" rx="4" fill="url(#metal)" stroke="#3a4258" />
+          <rect x="60" y="190" width="70" height="50" fill="url(#metal)" stroke="#3a4258" />
+          <rect x="80" y="150" width="30" height="22" fill="url(#metal)" />
+          <circle cx="95" cy="180" r="11" fill={colorFor(wellLvl)} className="pulse-glow" style={{ color: colorFor(wellLvl) }} />
+          {/* hand wheel */}
+          <circle cx="40" cy="215" r="14" fill="none" stroke="#ff6b00" strokeWidth="3" />
+          <line x1="26" y1="215" x2="54" y2="215" stroke="#ff6b00" strokeWidth="3" />
+          <line x1="40" y1="201" x2="40" y2="229" stroke="#ff6b00" strokeWidth="3" />
+          <text x="95" y="490" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">WH-101</text>
+          <text x="95" y="510" textAnchor="middle" fill={colorFor(wellLvl)} fontSize="15" className="scada-value">{s.wellPressure.toFixed(1)} bar</text>
         </g>
-        <SensorDot x={170} y={200} type="PT" id="PT-101" />
+        <SensorDot x={200} y={280} type="PT" id="PT-101" />
 
-        {/* Separator */}
+        {/* ===== Vertical Separator V-101 (realistic) ===== */}
         <g onClick={() => select("sep")} className="cursor-pointer">
-          <rect x="260" y="150" width="150" height="220" rx="60" fill="url(#metal)" stroke="#2a3148" />
-          {/* liquid fill */}
-          <clipPath id="sepClip"><rect x="262" y="152" width="146" height="216" rx="58" /></clipPath>
-          <rect
-            x="260"
-            y={150 + 220 - (s.sepLevel / 100) * 218}
-            width="150"
-            height={(s.sepLevel / 100) * 218}
-            fill="url(#liquid)"
-            opacity="0.85"
-            clipPath="url(#sepClip)"
-          />
-          <line x1="260" y1={150 + 220 - (s.sepLevel / 100) * 218} x2="410" y2={150 + 220 - (s.sepLevel / 100) * 218} stroke="#ffdd99" strokeWidth="1.5" opacity="0.7" />
-          <text x="335" y="395" textAnchor="middle" className="scada-value" fill="#9aa3b8" fontSize="11">V-101  Separator</text>
-          <text x="335" y="415" textAnchor="middle" className="scada-value" fill={colorFor(sepLvlA)} fontSize="13">L {s.sepLevel.toFixed(0)}% · P {s.sepPressure.toFixed(1)}</text>
+          {/* Skirt / support */}
+          <rect x="335" y="470" width="100" height="60" fill="url(#metal)" stroke="#3a4258" />
+          <line x1="345" y1="470" x2="345" y2="530" stroke="#1a2030" strokeWidth="2" />
+          <line x1="425" y1="470" x2="425" y2="530" stroke="#1a2030" strokeWidth="2" />
+          {/* Bottom elliptical head */}
+          <path d="M 290 460 A 90 30 0 0 0 480 460 Z" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Cylindrical shell */}
+          <rect x="290" y="170" width="190" height="290" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Top elliptical head */}
+          <path d="M 290 170 A 90 30 0 0 1 480 170 Z" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Liquid fill inside shell */}
+          <clipPath id="sepClip"><rect x="291" y="171" width="188" height="289" /></clipPath>
+          <g clipPath="url(#sepClip)">
+            <rect
+              x="290"
+              y={460 - (s.sepLevel / 100) * 280}
+              width="190"
+              height={(s.sepLevel / 100) * 280 + 10}
+              fill="url(#liquid)"
+              opacity="0.9"
+            />
+            <line x1="290" y1={460 - (s.sepLevel / 100) * 280} x2="480" y2={460 - (s.sepLevel / 100) * 280} stroke="#ffe1b3" strokeWidth="2" opacity="0.8" />
+          </g>
+          {/* Sight glass */}
+          <rect x="455" y="200" width="10" height="240" fill="#0a0e1a" stroke="#3a4258" />
+          <rect x="455" y={440 - (s.sepLevel / 100) * 240} width="10" height={(s.sepLevel / 100) * 240} fill="#ffa64d" opacity="0.9" />
+          {/* Nozzles */}
+          <rect x="280" y="270" width="14" height="22" fill="#3a4258" />
+          <rect x="476" y="250" width="14" height="22" fill="#3a4258" />
+          <rect x="476" y="350" width="14" height="22" fill="#3a4258" />
+          {/* Manway */}
+          <circle cx="385" cy="230" r="16" fill="none" stroke="#3a4258" strokeWidth="2" />
+          {[0,1,2,3,4,5].map(i => <circle key={i} cx={385 + 14*Math.cos(i*Math.PI/3)} cy={230 + 14*Math.sin(i*Math.PI/3)} r="1.5" fill="#3a4258" />)}
+          {/* Label plate */}
+          <rect x="350" y="310" width="70" height="26" fill="#0a0e1a" stroke="#3a4258" />
+          <text x="385" y="328" textAnchor="middle" fill="#ff6b00" fontSize="13" className="scada-value">V-101</text>
+
+          <text x="385" y="560" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">Separator V-101</text>
+          <text x="385" y="580" textAnchor="middle" fill={colorFor(sepLvlA)} fontSize="14" className="scada-value">L {s.sepLevel.toFixed(0)}%  ·  P {s.sepPressure.toFixed(1)} bar</text>
         </g>
-        <SensorDot x={420} y={170} type="LT" id="LT-101" />
-        <SensorDot x={420} y={220} type="PT" id="PT-102" />
+        <SensorDot x={500} y={260} type="LT" id="LT-101" />
+        <SensorDot x={500} y={360} type="PT" id="PT-102" />
 
         {/* FV valve before compressor */}
-        <Valve x={620} y={185} open={s.fvOpen} id="FV-101" onClick={() => select("fv")} />
+        <Valve x={660} y={260} open={s.fvOpen} id="FV-101" onClick={() => select("fv")} />
 
-        {/* Compressor */}
+        {/* ===== Compressor K-101 (larger) ===== */}
         <g onClick={() => select("comp")} className="cursor-pointer">
-          <rect x="660" y="170" width="120" height="60" rx="30" fill="url(#metal)" stroke="#2a3148" />
-          <circle cx="720" cy="200" r="22" fill="#0c111e" stroke="#2a3148" />
-          <g className={s.compRunning ? "animate-spin-slow" : ""} style={{ transformOrigin: "720px 200px" }}>
-            <rect x="717" y="180" width="6" height="40" fill="#ff6b00" />
-            <rect x="700" y="197" width="40" height="6" fill="#ff6b00" />
+          {/* Base skid */}
+          <rect x="715" y="320" width="160" height="20" fill="#1a2030" stroke="#3a4258" />
+          {/* Motor */}
+          <rect x="715" y="220" width="60" height="100" rx="6" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
+          {[0,1,2,3,4].map(i => <line key={i} x1="722" y1={235+i*16} x2="768" y2={235+i*16} stroke="#1a2030" strokeWidth="1.5" />)}
+          {/* Compressor body */}
+          <rect x="775" y="210" width="100" height="110" rx="10" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Coupling */}
+          <rect x="770" y="255" width="10" height="20" fill="#ff6b00" />
+          {/* Impeller window */}
+          <circle cx="825" cy="265" r="34" fill="#0a0e1a" stroke="#3a4258" strokeWidth="2" />
+          <g className={s.compRunning ? "animate-spin-slow" : ""} style={{ transformOrigin: "825px 265px" }}>
+            <rect x="822" y="234" width="6" height="62" fill="#ff6b00" />
+            <rect x="794" y="262" width="62" height="6" fill="#ff6b00" />
+            <rect x="803" y="243" width="44" height="6" fill="#ff8a30" transform="rotate(45 825 265)" />
+            <rect x="803" y="281" width="44" height="6" fill="#ff8a30" transform="rotate(45 825 265)" />
           </g>
-          <text x="720" y="255" textAnchor="middle" className="scada-value" fill="#9aa3b8" fontSize="11">K-101</text>
-          <text x="720" y="272" textAnchor="middle" className="scada-value" fill={colorFor(dischLvl)} fontSize="12">{s.discharge.toFixed(1)} bar · {s.rpm.toFixed(0)} rpm</text>
+          <circle cx="825" cy="265" r="6" fill="#3a4258" />
+          {/* Discharge stub */}
+          <rect x="870" y="252" width="14" height="22" fill="#3a4258" />
+          <text x="825" y="365" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">Compressor K-101</text>
+          <text x="825" y="385" textAnchor="middle" fill={colorFor(dischLvl)} fontSize="14" className="scada-value">{s.discharge.toFixed(1)} bar · {s.rpm.toFixed(0)} rpm</text>
         </g>
-        <SensorDot x={680} y={170} type="PT" id="PT-103-S" />
-        <SensorDot x={780} y={170} type="PT" id="PT-103" />
-        <SensorDot x={760} y={230} type="TT" id="TT-102" />
+        <SensorDot x={755} y={210} type="PT" id="PT-103-S" />
+        <SensorDot x={875} y={210} type="PT" id="PT-103" />
+        <SensorDot x={875} y={310} type="TT" id="TT-102" />
 
         {/* PV recycle valve */}
-        <Valve x={540} y={280} open={s.pvOpen} id="PV-101" onClick={() => select("pv")} />
+        <Valve x={600} y={350} open={s.pvOpen} id="PV-101" onClick={() => select("pv")} />
 
-        {/* Treatment column */}
+        {/* ===== Treatment column T-101 ===== */}
         <g onClick={() => select("treat")} className="cursor-pointer">
-          <rect x="850" y="320" width="60" height="180" rx="6" fill="url(#metal)" stroke="#2a3148" />
-          {[0, 1, 2, 3].map((i) => (
-            <line key={i} x1="850" y1={355 + i * 40} x2="910" y2={355 + i * 40} stroke="#2a3148" />
+          {/* Top head */}
+          <path d="M 920 400 A 50 18 0 0 1 1020 400 Z" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <rect x="920" y="400" width="100" height="180" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <path d="M 920 580 A 50 18 0 0 0 1020 580 Z" fill="url(#vessel)" stroke="#3a4258" strokeWidth="1.5" />
+          {/* trays */}
+          {[0,1,2,3,4].map(i => (
+            <g key={i}>
+              <line x1="920" y1={425+i*30} x2="1020" y2={425+i*30} stroke="#1a2030" strokeWidth="2" />
+              <line x1="930" y1={425+i*30} x2="930" y2={425+i*30+8} stroke="#3a4258" />
+              <line x1="1010" y1={425+i*30} x2="1010" y2={425+i*30+8} stroke="#3a4258" />
+            </g>
           ))}
-          <text x="880" y="520" textAnchor="middle" className="scada-value" fill="#9aa3b8" fontSize="11">T-101</text>
-          <text x="880" y="538" textAnchor="middle" className="scada-value" fill="var(--success)" fontSize="12">{s.purity.toFixed(2)}%</text>
+          <rect x="945" y="475" width="50" height="22" fill="#0a0e1a" stroke="#3a4258" />
+          <text x="970" y="491" textAnchor="middle" fill="#ff6b00" fontSize="12" className="scada-value">T-101</text>
+          <text x="970" y="610" textAnchor="middle" fill="var(--success)" fontSize="14" className="scada-value">{s.purity.toFixed(2)}% pure</text>
         </g>
 
         {/* LV liquid drain */}
-        <Valve x={720} y={410} open={s.lvOpen} id="LV-101" onClick={() => select("lv")} />
-        <text x="755" y="480" className="scada-value" fill="#9aa3b8" fontSize="10">to drain</text>
+        <Valve x={770} y={470} open={s.lvOpen} id="LV-101" onClick={() => select("lv")} />
+        <text x={830} y={475} fill="#9aa3b8" fontSize="11" className="scada-value">→ drain</text>
       </svg>
+
+      {/* Zoom controls */}
+      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1">
+        <button onClick={() => setZoom(z => Math.min(2, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom in">
+          <ZoomIn className="h-4 w-4" />
+        </button>
+        <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom out">
+          <ZoomOut className="h-4 w-4" />
+        </button>
+        <button onClick={() => setZoom(1)} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Reset zoom">
+          <Maximize2 className="h-4 w-4" />
+        </button>
+        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(zoom * 100)}%</div>
+      </div>
 
       <Legend />
       <DetailPanel />
@@ -116,8 +210,23 @@ export function PlantView() {
 function Pipe({ d, color }: { d: string; color: string }) {
   return (
     <g>
-      <path d={d} stroke="#2a3148" strokeWidth="10" fill="none" strokeLinecap="round" />
-      <path d={d} stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" className="flow-pipe" opacity="0.9" />
+      <path d={d} stroke="#1a2030" strokeWidth="22" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d} stroke="#3a4258" strokeWidth="18" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d} stroke={color} strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" className="flow-pipe" opacity="0.85" />
+    </g>
+  );
+}
+
+function FlowParticles({ href, color, count, dur, liquid }: { href: string; color: string; count: number; dur: number; liquid?: boolean }) {
+  return (
+    <g>
+      {Array.from({ length: count }).map((_, i) => (
+        <circle key={i} r={liquid ? 4 : 3.5} fill={color} opacity="0.95">
+          <animateMotion dur={`${dur}s`} repeatCount="indefinite" begin={`${(i * dur) / count}s`} rotate="auto">
+            <mpath href={href} />
+          </animateMotion>
+        </circle>
+      ))}
     </g>
   );
 }
@@ -127,21 +236,27 @@ function SensorDot({ x, y, type, id }: { x: number; y: number; type: "PT" | "TT"
   const select = useSim((s) => s.setSelected);
   return (
     <g onClick={(e) => { e.stopPropagation(); select(id); }} className="cursor-pointer">
-      <circle cx={x} cy={y} r="10" fill={colors[type]} opacity="0.25" />
-      <circle cx={x} cy={y} r="6" fill={colors[type]} />
-      <text x={x} y={y + 22} textAnchor="middle" fill="#7d869c" fontSize="9" className="scada-value">{type}</text>
+      <circle cx={x} cy={y} r="16" fill={colors[type]} opacity="0.18" />
+      <circle cx={x} cy={y} r="10" fill={colors[type]} stroke="#0a0e1a" strokeWidth="2" />
+      <text x={x} y={y + 4} textAnchor="middle" fill="#0a0e1a" fontSize="9" fontWeight="700" className="scada-value">{type}</text>
+      <text x={x} y={y + 30} textAnchor="middle" fill="#7d869c" fontSize="10" className="scada-value">{id}</text>
     </g>
   );
 }
 
 function Valve({ x, y, open, id, onClick }: { x: number; y: number; open: number; id: string; onClick: () => void }) {
+  const c = open > 50 ? "var(--success)" : open > 10 ? "var(--warning)" : "var(--danger)";
   return (
     <g onClick={(e) => { e.stopPropagation(); onClick(); }} className="cursor-pointer">
-      <rect x={x - 18} y={y - 18} width="36" height="36" rx="4" fill="url(#metal)" stroke="#2a3148" />
-      <polygon points={`${x - 12},${y + 12} ${x + 12},${y + 12} ${x},${y - 12}`} fill={open > 50 ? "var(--success)" : open > 10 ? "var(--warning)" : "var(--danger)"} opacity="0.8" />
-      <rect x={x - 3} y={y - 30} width="6" height="14" fill="#3a4258" />
-      <text x={x} y={y + 32} textAnchor="middle" fill="#9aa3b8" fontSize="9" className="scada-value">{id}</text>
-      <text x={x} y={y + 44} textAnchor="middle" fill="#e6e8ee" fontSize="10" className="scada-value">{open.toFixed(0)}%</text>
+      {/* actuator on top */}
+      <rect x={x - 14} y={y - 44} width="28" height="14" rx="2" fill="#3a4258" stroke="#1a2030" />
+      <rect x={x - 4} y={y - 30} width="8" height="14" fill="#3a4258" />
+      {/* valve body — bowtie */}
+      <polygon points={`${x - 22},${y - 18} ${x},${y} ${x - 22},${y + 18}`} fill="url(#metal)" stroke="#1a2030" strokeWidth="1.5" />
+      <polygon points={`${x + 22},${y - 18} ${x},${y} ${x + 22},${y + 18}`} fill="url(#metal)" stroke="#1a2030" strokeWidth="1.5" />
+      <circle cx={x} cy={y} r="6" fill={c} className="pulse-glow" style={{ color: c }} />
+      <text x={x} y={y + 36} textAnchor="middle" fill="#9aa3b8" fontSize="11" className="scada-value">{id}</text>
+      <text x={x} y={y + 50} textAnchor="middle" fill="#e6e8ee" fontSize="11" className="scada-value">{open.toFixed(0)}%</text>
     </g>
   );
 }
@@ -172,7 +287,7 @@ function DetailPanel() {
         initial={{ x: 320, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 320, opacity: 0 }}
-        className="absolute right-2 top-2 z-10 w-72 rounded-lg border border-border bg-card/95 p-3 backdrop-blur"
+        className="absolute bottom-2 right-2 z-10 w-72 max-w-[calc(100vw-1rem)] rounded-lg border border-border bg-card/95 p-3 backdrop-blur sm:top-2 sm:bottom-auto"
       >
         <div className="flex items-center justify-between">
           <h4 className="font-mono text-xs uppercase tracking-widest text-primary">{id}</h4>
@@ -206,7 +321,6 @@ function renderDetail(id: string, s: ReturnType<typeof useSim.getState>) {
     const cv = 25;
     return <><Row k="Position" v={`${open.toFixed(1)} %`} /><Row k="Cv" v={cv} /><Row k="ΔP" v={`${dp.toFixed(2)} bar`} /><Row k="Flow" v={`${(cv * Math.sqrt(dp) * (open / 100)).toFixed(1)} m³/h`} /></>;
   }
-  // sensors
   const map: Record<string, [number, number, number]> = {
     "PT-101": [s.wellPressure, 0, 150],
     "PT-102": [s.sepPressure, 0, 100],
