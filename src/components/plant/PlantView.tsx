@@ -67,8 +67,23 @@ export function PlantView() {
   };
 
   return (
-    <div className="relative h-full w-full overflow-auto bg-[#0a0e1a]">
-      <svg viewBox="0 0 1100 620" className="block" preserveAspectRatio="xMidYMid meet" style={{ height: "100%", width: "auto", minWidth: "100%", transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform .2s" }}>
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden bg-[#0a0e1a] touch-none select-none"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      style={{ cursor: dragRef.current ? "grabbing" : "grab" }}
+    >
+      <svg
+        viewBox={`0 0 ${VBW} ${VBH}`}
+        width={VBW}
+        height={VBH}
+        preserveAspectRatio="xMidYMid meet"
+        style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}
+      >
+
 
 
         <defs>
