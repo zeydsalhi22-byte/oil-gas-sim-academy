@@ -33,8 +33,9 @@ function GasPage() {
 }
 
 function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
-  const alarms: any[] = [];
-  const critical = undefined as any;
+  const allAlarms = useSim((s) => s.alarms);
+  const alarms = allAlarms.filter((a) => !a.ack);
+  const critical = alarms.find((a) => a.level === "critical");
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
