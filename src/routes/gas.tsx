@@ -73,9 +73,9 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 px-3 pb-20 pt-3 sm:px-5 sm:pb-5">
+      <main className={`flex-1 ${tab === "plant" ? "flex min-h-0 flex-col p-0 pb-14 sm:pb-0" : "px-3 pb-20 pt-3 sm:px-5 sm:pb-5"}`}>
         {tab === "plant" && (
-          <div className="h-[calc(100vh-180px)] min-h-[420px]">
+          <div className="flex-1 min-h-0">
             <PlantView />
           </div>
         )}
