@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Cpu, Gauge, Sliders, GraduationCap, AlertTriangle } from "lucide-react";
-import { useSim } from "@/lib/sim/store";
+import { useSim, startSimTicker } from "@/lib/sim/store";
 import { PlantView } from "@/components/plant/PlantView";
 import { ControlRoom } from "@/components/plant/ControlRoom";
 import { Simulators } from "@/components/plant/Simulators";
