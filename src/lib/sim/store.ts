@@ -212,13 +212,12 @@ export const useSim = create<SimState>((set, get) => ({
   },
 }));
 
-// global tick
-if (typeof window !== "undefined") {
-  // @ts-ignore
-  if (!window.__simTick) {
-    // @ts-ignore
-    window.__simTick = setInterval(() => useSim.getState().tick(), 500);
-  }
+// global tick — started lazily by useSimTicker() from a client effect
+let __simTickHandle: ReturnType<typeof setInterval> | null = null;
+export function startSimTicker() {
+  if (typeof window === "undefined") return;
+  if (__simTickHandle) return;
+  __simTickHandle = setInterval(() => useSim.getState().tick(), 500);
 }
 
 export function levelOf(value: number, lo: number, hi: number, llo?: number, hhi?: number): AlarmLevel {
