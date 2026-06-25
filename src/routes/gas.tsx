@@ -25,13 +25,17 @@ function GasPage() {
   const [tab, setTab] = useState<Tab>("plant");
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); startSimTicker(); }, []);
-  const allAlarms = useSim((s) => s.alarms);
-  const alarms = allAlarms.filter((a) => !a.ack);
-  const critical = alarms.find((a) => a.level === "critical");
 
   if (!mounted) {
     return <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground text-sm font-mono">Loading plant…</div>;
   }
+  return <GasPageInner tab={tab} setTab={setTab} />;
+}
+
+function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const allAlarms = useSim((s) => s.alarms);
+  const alarms = allAlarms.filter((a) => !a.ack);
+  const critical = alarms.find((a) => a.level === "critical");
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
