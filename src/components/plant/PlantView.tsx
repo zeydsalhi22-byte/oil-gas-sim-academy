@@ -13,7 +13,45 @@ const colorFor = (lvl: ReturnType<typeof levelOf>) =>
 export function PlantView() {
   const s = useSim();
   const select = useSim((s) => s.setSelected);
-  const [zoom, setZoom] = useState(1);
+
+  // Auto-fit transform state
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const [userZoom, setUserZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const cr = entry.contentRect;
+      setBox({ w: cr.width, h: cr.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const fitScale = box.w && box.h ? Math.min(box.w / VBW, box.h / VBH) : 1;
+  const scale = fitScale * userZoom;
+  const tx = (box.w - VBW * scale) / 2 + pan.x;
+  const ty = (box.h - VBH * scale) / 2 + pan.y;
+
+  const resetView = () => { setUserZoom(1); setPan({ x: 0, y: 0 }); };
+
+  // Pan with pointer drag
+  const dragRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const onPointerDown = (e: React.PointerEvent) => {
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    setPan({ x: d.px + (e.clientX - d.x), y: d.py + (e.clientY - d.y) });
+  };
+  const onPointerUp = () => { dragRef.current = null; };
+
+
 
   const wellLvl = levelOf(s.wellPressure, 60, 110, 40, 130);
   const sepLvlA = levelOf(s.sepLevel, 20, 80, 10, 90);
