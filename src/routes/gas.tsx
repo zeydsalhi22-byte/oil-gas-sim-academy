@@ -73,7 +73,7 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       </header>
 
       {/* Content */}
-      <main className={`min-h-0 flex-1 ${tab === "plant" ? "flex flex-col overflow-hidden p-0" : "overflow-auto px-3 pb-20 pt-3 sm:px-5 sm:pb-5"}`}>
+      <main className={`min-h-0 flex-1 ${tab === "plant" ? "flex flex-col overflow-hidden p-0" : "overflow-auto px-3 py-3 sm:px-5 sm:py-5"}`}>
         {tab === "plant" && (
           <div className="min-h-0 flex-1">
             <PlantView />
