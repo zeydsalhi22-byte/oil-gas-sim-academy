@@ -26,7 +26,8 @@ export function PlantView() {
 
   return (
     <div className="relative h-full w-full overflow-auto bg-[#0a0e1a]">
-      <svg viewBox="0 0 1100 620" className="block" preserveAspectRatio="xMidYMid meet" style={{ width: `max(100%, calc(var(--plant-h, 100%) * ${1100/620}))`, height: "100%", minHeight: "100%", transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform .2s" }}>
+      <svg viewBox="0 0 1100 620" className="block" preserveAspectRatio="xMidYMid meet" style={{ height: "100%", width: "auto", minWidth: "100%", transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform .2s" }}>
+
 
         <defs>
           <linearGradient id="metal" x1="0" x2="0" y1="0" y2="1">
