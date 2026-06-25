@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSim, mA, levelOf } from "@/lib/sim/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import { X, ZoomIn, ZoomOut, Maximize2, RotateCcw } from "lucide-react";
+
+const VBW = 1100;
+const VBH = 620;
+
 
 const colorFor = (lvl: ReturnType<typeof levelOf>) =>
   lvl === "critical" ? "var(--danger)" : lvl === "high" ? "var(--warning)" : "var(--success)";
