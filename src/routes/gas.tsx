@@ -38,9 +38,9 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   const critical = alarms.find((a) => a.level === "critical");
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
       {/* Top bar */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
+      <header className="z-20 shrink-0 border-b border-border bg-background/95 backdrop-blur">
         <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 sm:px-5">
           <Link to="/" className="inline-flex items-center gap-1 rounded p-1 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /><span className="hidden sm:inline text-sm">Sectors</span>
@@ -73,9 +73,9 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       </header>
 
       {/* Content */}
-      <main className={`flex-1 ${tab === "plant" ? "flex min-h-0 flex-col p-0 pb-14 sm:pb-0" : "px-3 pb-20 pt-3 sm:px-5 sm:pb-5"}`}>
+      <main className={`min-h-0 flex-1 ${tab === "plant" ? "flex flex-col overflow-hidden p-0" : "overflow-auto px-3 pb-20 pt-3 sm:px-5 sm:pb-5"}`}>
         {tab === "plant" && (
-          <div className="flex-1 min-h-0">
+          <div className="min-h-0 flex-1">
             <PlantView />
           </div>
         )}
