@@ -24,7 +24,7 @@ type Tab = "plant" | "control" | "sim" | "quiz";
 function GasPage() {
   const [tab, setTab] = useState<Tab>("plant");
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); startSimTicker(); }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) {
     return <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground text-sm font-mono">Loading plant…</div>;
