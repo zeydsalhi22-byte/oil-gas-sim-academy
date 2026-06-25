@@ -76,7 +76,7 @@ function GasPageInner({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       <main className="flex-1 px-3 pb-20 pt-3 sm:px-5 sm:pb-5">
         {tab === "plant" && (
           <div className="h-[calc(100vh-180px)] min-h-[420px]">
-            <PlantView />
+            <div>placeholder</div>
           </div>
         )}
         {tab === "control" && <ControlRoom />}
