@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useSim, mA, levelOf } from "@/lib/sim/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import { X, ZoomIn, ZoomOut, Maximize2, RotateCcw } from "lucide-react";
+
+const VBW = 1100;
+const VBH = 620;
+
 
 const colorFor = (lvl: ReturnType<typeof levelOf>) =>
   lvl === "critical" ? "var(--danger)" : lvl === "high" ? "var(--warning)" : "var(--success)";
@@ -9,7 +13,45 @@ const colorFor = (lvl: ReturnType<typeof levelOf>) =>
 export function PlantView() {
   const s = useSim();
   const select = useSim((s) => s.setSelected);
-  const [zoom, setZoom] = useState(1);
+
+  // Auto-fit transform state
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const [userZoom, setUserZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const cr = entry.contentRect;
+      setBox({ w: cr.width, h: cr.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const fitScale = box.w && box.h ? Math.min(box.w / VBW, box.h / VBH) : 1;
+  const scale = fitScale * userZoom;
+  const tx = (box.w - VBW * scale) / 2 + pan.x;
+  const ty = (box.h - VBH * scale) / 2 + pan.y;
+
+  const resetView = () => { setUserZoom(1); setPan({ x: 0, y: 0 }); };
+
+  // Pan with pointer drag
+  const dragRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const onPointerDown = (e: React.PointerEvent) => {
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    setPan({ x: d.px + (e.clientX - d.x), y: d.py + (e.clientY - d.y) });
+  };
+  const onPointerUp = () => { dragRef.current = null; };
+
+
 
   const wellLvl = levelOf(s.wellPressure, 60, 110, 40, 130);
   const sepLvlA = levelOf(s.sepLevel, 20, 80, 10, 90);
@@ -25,8 +67,23 @@ export function PlantView() {
   };
 
   return (
-    <div className="relative h-full w-full overflow-auto bg-[#0a0e1a]">
-      <svg viewBox="0 0 1100 620" className="block" preserveAspectRatio="xMidYMid meet" style={{ height: "100%", width: "auto", minWidth: "100%", transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform .2s" }}>
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden bg-[#0a0e1a] touch-none select-none"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      style={{ cursor: dragRef.current ? "grabbing" : "grab" }}
+    >
+      <svg
+        viewBox={`0 0 ${VBW} ${VBH}`}
+        width={VBW}
+        height={VBH}
+        preserveAspectRatio="xMidYMid meet"
+        style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}
+      >
+
 
 
         <defs>
@@ -191,17 +248,21 @@ export function PlantView() {
 
       {/* Zoom controls */}
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1">
-        <button onClick={() => setZoom(z => Math.min(2, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom in">
+        <button onClick={() => setUserZoom(z => Math.min(4, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom in">
           <ZoomIn className="h-4 w-4" />
         </button>
-        <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom out">
+        <button onClick={() => setUserZoom(z => Math.max(0.4, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom out">
           <ZoomOut className="h-4 w-4" />
         </button>
-        <button onClick={() => setZoom(1)} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Reset zoom">
+        <button onClick={resetView} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Fit to screen">
           <Maximize2 className="h-4 w-4" />
         </button>
-        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(zoom * 100)}%</div>
+        <button onClick={resetView} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Reset view" title="Reset view">
+          <RotateCcw className="h-4 w-4" />
+        </button>
+        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(scale * 100)}%</div>
       </div>
+
 
       <Legend />
       <DetailPanel />
