@@ -248,17 +248,21 @@ export function PlantView() {
 
       {/* Zoom controls */}
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1">
-        <button onClick={() => setZoom(z => Math.min(2, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom in">
+        <button onClick={() => setUserZoom(z => Math.min(4, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom in">
           <ZoomIn className="h-4 w-4" />
         </button>
-        <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom out">
+        <button onClick={() => setUserZoom(z => Math.max(0.4, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Zoom out">
           <ZoomOut className="h-4 w-4" />
         </button>
-        <button onClick={() => setZoom(1)} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Reset zoom">
+        <button onClick={resetView} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Fit to screen">
           <Maximize2 className="h-4 w-4" />
         </button>
-        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(zoom * 100)}%</div>
+        <button onClick={resetView} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 text-foreground hover:bg-muted backdrop-blur" aria-label="Reset view" title="Reset view">
+          <RotateCcw className="h-4 w-4" />
+        </button>
+        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(scale * 100)}%</div>
       </div>
+
 
       <Legend />
       <DetailPanel />
