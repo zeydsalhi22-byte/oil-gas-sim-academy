@@ -284,7 +284,7 @@ function FaultDiagnosis() {
   const [active, setActive] = useState<FaultDef | null>(null);
   const [guess, setGuess] = useState<FaultType | "">("");
   const [submitted, setSubmitted] = useState(false);
-  const lang = (typeof document !== "undefined" && document.documentElement.lang === "ar") ? "ar" : "en";
+  const lang = useI18n((s) => s.lang);
 
   const start = () => {
     const f = faults[Math.floor(Math.random() * faults.length)];
