@@ -224,74 +224,146 @@ function StartupSequence() {
 }
 
 /* ---------- Fault diagnosis ---------- */
-const faults: { id: FaultType; tag: string; loc: string; label: string }[] = [
-  { id: "pt_fail", tag: "PT-103", loc: "discharge", label: "Pressure transmitter PT-103 failed" },
-  { id: "valve_stuck", tag: "PV-101", loc: "recycle", label: "Recycle valve PV-101 stuck closed" },
-  { id: "leak", tag: "SEP", loc: "separator", label: "Leak on separator V-101" },
-  { id: "tt_fail", tag: "TT-102", loc: "compressor", label: "Temperature transmitter TT-102 failed" },
+interface FaultDef {
+  id: FaultType;
+  tag: string;
+  loc: string;
+  label: { en: string; ar: string };
+  symptoms: { en: string; ar: string }[];
+  explain: { en: string; ar: string };
+}
+const faults: FaultDef[] = [
+  {
+    id: "pt_fail", tag: "PT-103", loc: "discharge",
+    label: { en: "Pressure transmitter PT-103 failed", ar: "عطل في ناقل الضغط PT-103" },
+    symptoms: [
+      { en: "Discharge pressure reading drops to 0 bar instantly", ar: "قراءة ضغط التفريغ تنخفض إلى 0 بار فجأة" },
+      { en: "PID loop saturates the recycle valve trying to react", ar: "حلقة PID تشبع صمام الإرجاع محاولةً الاستجابة" },
+      { en: "Other compressor readings (RPM, temp) remain normal", ar: "بقية قراءات الضاغط (السرعة، الحرارة) طبيعية" },
+      { en: "No mechanical noise, no flow disturbance", ar: "لا ضجيج ميكانيكي ولا اضطراب في التدفق" },
+    ],
+    explain: { en: "A flat-zero reading on a single transmitter while the process is clearly running means the instrument signal is lost — typical 4-20 mA open circuit.", ar: "قراءة صفر ثابتة على ناقل واحد بينما العملية تعمل تعني فقدان إشارة الجهاز — انقطاع نموذجي في حلقة 4-20 mA." },
+  },
+  {
+    id: "valve_stuck", tag: "PV-101", loc: "recycle",
+    label: { en: "Recycle valve PV-101 stuck closed", ar: "صمام الإرجاع PV-101 عالق مغلقًا" },
+    symptoms: [
+      { en: "PV-101 position stays at 0% even when PID demands opening", ar: "وضعية PV-101 تبقى 0% رغم طلب PID فتحها" },
+      { en: "Discharge pressure climbs above setpoint", ar: "ضغط التفريغ يرتفع فوق نقطة الضبط" },
+      { en: "Compressor power consumption increases", ar: "استهلاك الضاغط للقدرة يرتفع" },
+      { en: "Risk of HIGH-HIGH pressure alarm", ar: "خطر إنذار ضغط HIGH-HIGH" },
+    ],
+    explain: { en: "When PID output rises but valve position does not follow, the actuator or valve body is mechanically stuck.", ar: "عندما يرتفع مخرج PID دون أن تتبعه وضعية الصمام، يكون المحرك أو جسم الصمام عالقًا ميكانيكيًا." },
+  },
+  {
+    id: "leak", tag: "SEP", loc: "separator",
+    label: { en: "Leak on separator V-101", ar: "تسرّب في الفاصل V-101" },
+    symptoms: [
+      { en: "Separator pressure drops noticeably", ar: "ضغط الفاصل ينخفض بشكل ملحوظ" },
+      { en: "Gas outlet flow drops to roughly half", ar: "تدفق الغاز عند المخرج ينخفض إلى نحو النصف" },
+      { en: "Suction pressure to the compressor drops", ar: "ضغط شفط الضاغط ينخفض" },
+      { en: "Wellhead inflow unchanged — losses are between WH and K-101", ar: "تدفق رأس البئر لم يتغيّر — الفقد بين WH و K-101" },
+    ],
+    explain: { en: "Simultaneous low pressure and low flow downstream of an unchanged source point to a leak between the source and the measurement.", ar: "انخفاض الضغط والتدفق معًا أسفل مصدر ثابت يشير إلى تسرّب بين المصدر ونقطة القياس." },
+  },
+  {
+    id: "tt_fail", tag: "TT-102", loc: "compressor",
+    label: { en: "Temperature transmitter TT-102 failed", ar: "عطل في ناقل الحرارة TT-102" },
+    symptoms: [
+      { en: "Compressor temperature jumps to an absurd value (>900°C)", ar: "حرارة الضاغط تقفز إلى قيمة غير منطقية (>900°C)" },
+      { en: "Pressure, RPM and flow remain normal", ar: "الضغط والسرعة والتدفق تبقى طبيعية" },
+      { en: "No vibration or sound change from K-101", ar: "لا تغيّر في الاهتزاز أو الصوت من K-101" },
+      { en: "Triggers HIGH temperature alarm immediately", ar: "يطلق إنذار حرارة HIGH فورًا" },
+    ],
+    explain: { en: "An out-of-range temperature reading with no other process change is a transmitter failure — likely a broken RTD or burnt input.", ar: "قراءة حرارة خارج المدى مع عدم تغيّر باقي العملية تعني عطلًا في الناقل — غالبًا RTD مكسور أو دخل محترق." },
+  },
 ];
+
 function FaultDiagnosis() {
-  const [active, setActive] = useState<typeof faults[number] | null>(null);
-  const [hints, setHints] = useState(0);
-  const [result, setResult] = useState<string | null>(null);
-  const [t0, setT0] = useState<number>(0);
+  const t = useT();
+  const [active, setActive] = useState<FaultDef | null>(null);
+  const [guess, setGuess] = useState<FaultType | "">("");
+  const [submitted, setSubmitted] = useState(false);
+  const lang = (typeof document !== "undefined" && document.documentElement.lang === "ar") ? "ar" : "en";
 
   const start = () => {
     const f = faults[Math.floor(Math.random() * faults.length)];
     setActive(f);
-    setHints(0);
-    setResult(null);
-    setT0(Date.now());
+    setGuess("");
+    setSubmitted(false);
     useSim.getState().injectFault(f.id, f.loc);
   };
-  const guess = (id: FaultType) => {
-    if (!active) return;
-    const dt = ((Date.now() - t0) / 1000).toFixed(0);
-    if (id === active.id) {
-      const score = Math.max(0, 100 - hints * 20 - Math.floor(+dt / 5));
-      setResult(`✓ Correct! Score: ${score} · time ${dt}s · hints ${hints}`);
-    } else {
-      setResult(`✗ Wrong — keep observing the SCADA.`);
-    }
+  const submit = () => {
+    if (!active || !guess) return;
+    setSubmitted(true);
     useSim.getState().injectFault("none");
   };
+
+  const correct = submitted && active && guess === active.id;
 
   return (
     <div className="space-y-3 rounded-md border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <div className="font-mono text-sm uppercase tracking-widest text-muted-foreground">Fault Detection</div>
+        <div className="font-mono text-sm uppercase tracking-widest text-muted-foreground">{t("fault_title")}</div>
         <button onClick={start} className="inline-flex items-center gap-1 rounded bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-          <Play className="h-3 w-3" /> Inject random fault
+          <Play className="h-3 w-3" /> {t("fault_inject")}
         </button>
       </div>
-      <p className="text-xs text-muted-foreground">Observe the SCADA trends and Plant view to identify the failed device. Use hints sparingly.</p>
+      <p className="text-xs text-muted-foreground">{t("fault_intro")}</p>
 
       {active && (
         <>
           <div className="rounded-md border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3 text-xs">
-            Fault is active. Diagnose which device failed:
+            {t("fault_active")}
           </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {faults.map((f) => (
-              <button key={f.id} onClick={() => guess(f.id)} className="rounded-md border border-border bg-background p-3 text-left text-xs hover:border-primary">
-                <div className="scada-value text-primary">{f.tag}</div>
-                <div className="text-muted-foreground">{f.label}</div>
-              </button>
-            ))}
+
+          <div className="rounded-md border border-border bg-background p-3">
+            <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{t("symptoms")}</div>
+            <ul className="space-y-1 text-xs">
+              {active.symptoms.map((s, i) => (
+                <li key={i} className="flex gap-2"><span className="text-primary">•</span><span>{s[lang]}</span></li>
+              ))}
+            </ul>
           </div>
-          <button onClick={() => setHints(hints + 1)} className="inline-flex items-center gap-1 rounded bg-muted px-3 py-1 text-xs hover:bg-accent">
-            <Lightbulb className="h-3 w-3" /> Hint ({hints})
-          </button>
-          {hints > 0 && (
-            <div className="rounded-md border border-border bg-background p-2 text-xs text-muted-foreground">
-              {hints >= 1 && <p>Hint 1 — Check which area shows abnormal readings on the Plant view.</p>}
-              {hints >= 2 && <p>Hint 2 — Look at the suspicious tag in trend graphs (Control Room).</p>}
-              {hints >= 3 && <p>Hint 3 — The failed device is in: <span className="text-primary">{active.loc}</span></p>}
+
+          <div className="space-y-2">
+            <label className="block font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{t("i_think")}</label>
+            <select
+              value={guess}
+              onChange={(e) => setGuess(e.target.value as FaultType)}
+              disabled={submitted}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            >
+              <option value="">{t("pick_one")}</option>
+              {faults.map((f) => (
+                <option key={f.id} value={f.id}>{f.tag} — {f.label[lang]}</option>
+              ))}
+            </select>
+            <button
+              onClick={submit}
+              disabled={!guess || submitted}
+              className="w-full rounded bg-primary py-2 text-sm font-semibold text-primary-foreground disabled:opacity-40 hover:brightness-110"
+            >
+              {t("submit")}
+            </button>
+          </div>
+
+          {submitted && active && (
+            <div className={`space-y-1 rounded-md border p-3 text-sm ${correct ? "border-[var(--success)]/40 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--danger)]/40 bg-[var(--danger)]/10 text-[var(--danger)]"}`}>
+              <div className="flex items-center gap-2 font-semibold">
+                {correct ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                {correct ? t("correct") : t("wrong")}
+              </div>
+              <div className="text-xs opacity-90"><span className="font-mono uppercase tracking-wider">{t("explanation")}:</span> {active.explain[lang]}</div>
+              {!correct && (
+                <div className="text-xs opacity-90">
+                  <span className="font-mono">{active.tag}</span> — {active.label[lang]}
+                </div>
+              )}
             </div>
           )}
         </>
       )}
-      {result && <div className={`rounded-md border p-3 text-sm ${result.startsWith("✓") ? "border-[var(--success)]/40 bg-[var(--success)]/10 text-[var(--success)]" : "border-[var(--danger)]/40 bg-[var(--danger)]/10 text-[var(--danger)]"}`}>{result}</div>}
     </div>
   );
 }
