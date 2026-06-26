@@ -1,28 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSim, type FaultType } from "@/lib/sim/store";
+import { useT } from "@/lib/i18n";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, Tooltip } from "recharts";
 import { Check, X, Lightbulb, RotateCcw, Play } from "lucide-react";
 
 export function Simulators() {
   const [tab, setTab] = useState<"pid" | "startup" | "fault" | "flow">("pid");
+  const t = useT();
   const tabs = [
-    { k: "pid", l: "PID Tuner" },
-    { k: "startup", l: "Startup Sequence" },
-    { k: "fault", l: "Fault Diagnosis" },
-    { k: "flow", l: "Flow & Pressure" },
+    { k: "pid", l: t("sim_pid") },
+    { k: "startup", l: t("sim_startup") },
+    { k: "fault", l: t("sim_fault") },
+    { k: "flow", l: t("sim_flow") },
   ] as const;
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-1 rounded-md border border-border bg-card p-1 text-xs">
-        {tabs.map((t) => (
+        {tabs.map((tab2) => (
           <button
-            key={t.k}
-            onClick={() => setTab(t.k as any)}
+            key={tab2.k}
+            onClick={() => setTab(tab2.k as any)}
             className={`flex-1 rounded px-3 py-2 font-mono uppercase tracking-wider ${
-              tab === t.k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              tab === tab2.k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t.l}
+            {tab2.l}
           </button>
         ))}
       </div>
