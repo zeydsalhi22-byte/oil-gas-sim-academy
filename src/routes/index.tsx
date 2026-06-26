@@ -77,8 +77,8 @@ function Home() {
 }
 
 function SectorCard({
-  to, title, tag, icon, color, description, active,
-}: { to?: string; title: string; tag: string; icon: React.ReactNode; color: string; description: string; active?: boolean }) {
+  to, title, tag, icon, color, description, active, activeLabel = "ACTIVE", comingLabel = "COMING SOON",
+}: { to?: string; title: string; tag: string; icon: React.ReactNode; color: string; description: string; active?: boolean; activeLabel?: string; comingLabel?: string }) {
   const inner = (
     <motion.div
       whileHover={active ? { y: -4 } : {}}
@@ -96,11 +96,11 @@ function SectorCard({
       <div className="mt-4 flex items-center justify-between">
         {active ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--success)]/15 px-2 py-0.5 text-xs font-medium text-[var(--success)]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--success)]" /> ACTIVE
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--success)]" /> {activeLabel}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-            <Lock className="h-3 w-3" /> COMING SOON
+            <Lock className="h-3 w-3" /> {comingLabel}
           </span>
         )}
         {active && <ArrowRight className="h-4 w-4 text-primary transition group-hover:translate-x-1" />}
