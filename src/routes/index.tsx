@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Flame, Droplet, Warehouse, Lock, ArrowRight, Gauge, Activity } from "lucide-react";
+import { Flame, Droplet, Warehouse, Lock, ArrowRight, Gauge, Activity, Languages } from "lucide-react";
+import { useI18n, useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
