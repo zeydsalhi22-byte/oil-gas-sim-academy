@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSim, type FaultType } from "@/lib/sim/store";
-import { useT } from "@/lib/i18n";
+import { useI18n, useT } from "@/lib/i18n";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, Tooltip } from "recharts";
 import { Check, X, Lightbulb, RotateCcw, Play } from "lucide-react";
 
