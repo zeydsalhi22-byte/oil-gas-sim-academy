@@ -16,6 +16,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const t = useT();
+  const lang = useI18n((s) => s.lang);
+  const toggleLang = useI18n((s) => s.toggle);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(255,107,0,0.15),transparent_60%)]" />
@@ -25,67 +28,49 @@ function Home() {
           <div className="grid h-9 w-9 place-items-center rounded-md bg-primary/15 text-primary">
             <Flame className="h-5 w-5" />
           </div>
-          <span className="font-mono text-sm tracking-widest text-muted-foreground">OILSIM // ACADEMY</span>
+          <span className="font-mono text-sm tracking-widest text-muted-foreground">{t("brand")}</span>
         </div>
-        <a href="#sectors" className="text-sm text-muted-foreground hover:text-foreground">Sectors ↓</a>
+        <div className="flex items-center gap-3">
+          <button onClick={toggleLang} className="inline-flex items-center gap-1 rounded border border-border bg-card px-2 py-1 font-mono text-xs text-muted-foreground hover:text-foreground" aria-label="Toggle language">
+            <Languages className="h-3.5 w-3.5" />{lang === "en" ? "العربية" : "English"}
+          </button>
+          <a href="#sectors" className="text-sm text-muted-foreground hover:text-foreground">{t("sectors_anchor")}</a>
+        </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 pb-12 pt-6 sm:px-8 sm:pt-14">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
             <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" />
-            Live process simulation engine running
+            {t("live_engine")}
           </div>
           <h1 className="mt-4 text-4xl font-black leading-tight sm:text-6xl">
-            OilSim <span className="text-primary">Academy</span>
+            {t("hero_title_1")} <span className="text-primary">{t("hero_title_2")}</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">
-            An interactive industrial simulator for process control, PID systems, sensors and SCADA — built for
-            L3 Electronics & Instrumentation students. Operate the plant, tune controllers, diagnose faults.
-          </p>
+          <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t("hero_desc")}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link to="/gas" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:brightness-110">
-              Enter Gas Sector <ArrowRight className="h-4 w-4" />
+              {t("enter_gas")} <ArrowRight className="h-4 w-4" />
             </Link>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Gauge className="h-3.5 w-3.5" /> Real PID math</span>
-              <span className="flex items-center gap-1"><Activity className="h-3.5 w-3.5" /> Live SCADA trends</span>
+              <span className="flex items-center gap-1"><Gauge className="h-3.5 w-3.5" /> {t("real_pid")}</span>
+              <span className="flex items-center gap-1"><Activity className="h-3.5 w-3.5" /> {t("live_trends")}</span>
             </div>
           </div>
         </motion.div>
       </section>
 
       <section id="sectors" className="mx-auto max-w-6xl px-4 pb-20 sm:px-8">
-        <h2 className="mb-5 font-mono text-xs uppercase tracking-widest text-muted-foreground">Choose a sector</h2>
+        <h2 className="mb-5 font-mono text-xs uppercase tracking-widest text-muted-foreground">{t("choose_sector")}</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          <SectorCard
-            to="/gas"
-            title="Gas Sector"
-            tag="GAS-01"
-            icon={<Flame className="h-6 w-6" />}
-            color="var(--primary)"
-            description="Wellhead, separator, compressor, treatment, SCADA control room and 4 simulators."
-            active
-          />
-          <SectorCard
-            title="Oil Sector"
-            tag="OIL-02"
-            icon={<Droplet className="h-6 w-6" />}
-            color="#3aa0ff"
-            description="Three-phase separation, crude processing, pumps and pipelines."
-          />
-          <SectorCard
-            title="Storage Sector"
-            tag="STO-03"
-            icon={<Warehouse className="h-6 w-6" />}
-            color="#00ff88"
-            description="Tank farm, inventory control, tank gauging and loading systems."
-          />
+          <SectorCard to="/gas" title={t("gas_sector")} tag="GAS-01" icon={<Flame className="h-6 w-6" />} color="var(--primary)" description={t("gas_desc")} active activeLabel={t("active")} comingLabel={t("coming_soon")} />
+          <SectorCard title={t("oil_sector")} tag="OIL-02" icon={<Droplet className="h-6 w-6" />} color="#3aa0ff" description={t("oil_desc")} activeLabel={t("active")} comingLabel={t("coming_soon")} />
+          <SectorCard title={t("storage_sector")} tag="STO-03" icon={<Warehouse className="h-6 w-6" />} color="#00ff88" description={t("storage_desc")} activeLabel={t("active")} comingLabel={t("coming_soon")} />
         </div>
       </section>
 
       <footer className="border-t border-border py-6 text-center font-mono text-xs text-muted-foreground">
-        OILSIM ACADEMY · TRAINING SIMULATOR · v1.0
+        {t("footer")}
       </footer>
     </div>
   );
