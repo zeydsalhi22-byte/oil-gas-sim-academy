@@ -153,8 +153,8 @@ export function OilPlantView() {
           <circle cx="340" cy="155" r="18" fill="none" stroke="#0066cc" strokeWidth="3" />
           <line x1="322" y1="155" x2="358" y2="155" stroke="#0066cc" strokeWidth="3" />
           <line x1="340" y1="137" x2="340" y2="173" stroke="#0066cc" strokeWidth="3" />
-          <text x="450" y="20" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">WH-201 Wellhead</text>
-          <text x="450" y="240" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
+          <text x="450" y="20" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">WH-201 Wellhead</text>
+          <text x="450" y="240" textAnchor="middle" fill="#ff8a4d" fontSize="16" className="scada-value">
             {s.wellPressure.toFixed(0)} bar · {s.wellTemp.toFixed(0)}°C
           </text>
         </g>
@@ -206,10 +206,10 @@ export function OilPlantView() {
 
           {/* Label box */}
           <rect x="360" y="525" width="100" height="26" fill="#0a0e1a" stroke="#3a4258" />
-          <text x="410" y="544" textAnchor="middle" fill="#0080ff" fontSize="14" className="scada-value">V-201</text>
+          <text x="410" y="544" textAnchor="middle" fill="#0080ff" fontSize="17" className="scada-value">V-201</text>
 
-          <text x="450" y="685" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">3-Phase Separator V-201</text>
-          <text x="450" y="703" textAnchor="middle" fill="#ff8a4d" fontSize="12" className="scada-value">
+          <text x="450" y="685" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">3-Phase Separator V-201</text>
+          <text x="450" y="703" textAnchor="middle" fill="#ff8a4d" fontSize="14" className="scada-value">
             Oil {s.oilLevel.toFixed(0)}% · Water {s.waterLevel.toFixed(0)}% · BS&amp;W {s.bsw.toFixed(2)}% · {s.sepPressure.toFixed(1)} bar
           </text>
         </g>
@@ -227,8 +227,8 @@ export function OilPlantView() {
         {/* Gas outlet to gas sector */}
         <ControlValve x={250} y={420} label="PV-201" open={70} tag="" orient="v" onClick={sel("PV-201")} />
         <g>
-          <text x="90" y="370" textAnchor="start" fill="#9aa3b8" fontSize="12" className="scada-value">→ TO GAS SECTOR</text>
-          <text x="90" y="388" textAnchor="start" fill="#ff8a4d" fontSize="11" className="scada-value">{s.sepGasFlow.toFixed(0)} m³/h</text>
+          <text x="90" y="370" textAnchor="start" fill="#9aa3b8" fontSize="14" className="scada-value">→ TO GAS SECTOR</text>
+          <text x="90" y="388" textAnchor="start" fill="#ff8a4d" fontSize="13" className="scada-value">{s.sepGasFlow.toFixed(0)} m³/h</text>
           <polygon points="60,380 75,373 75,387" fill={GAS} />
         </g>
 
@@ -279,12 +279,12 @@ export function OilPlantView() {
 
           {/* Label box */}
           <rect x="535" y="800" width="120" height="80" fill="#0a0e1a" stroke="#3a4258" rx="3" />
-          <text x="595" y="820" textAnchor="middle" fill="#0080ff" fontSize="13" className="scada-value">P-201</text>
-          <text x="595" y="838" textAnchor="middle" fill="#ff8a4d" fontSize="11" className="scada-value">{s.pumpFlow.toFixed(0)} m³/h</text>
-          <text x="595" y="852" textAnchor="middle" fill="#9aa3b8" fontSize="11" className="scada-value">{s.pumpRpm.toFixed(0)} rpm</text>
-          <text x="595" y="866" textAnchor="middle" fill="#9aa3b8" fontSize="11" className="scada-value">η {s.pumpEff.toFixed(0)}%  ΔP {s.pumpDP.toFixed(1)}</text>
+          <text x="595" y="820" textAnchor="middle" fill="#0080ff" fontSize="16" className="scada-value">P-201</text>
+          <text x="595" y="838" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">{s.pumpFlow.toFixed(0)} m³/h</text>
+          <text x="595" y="852" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{s.pumpRpm.toFixed(0)} rpm</text>
+          <text x="595" y="866" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">η {s.pumpEff.toFixed(0)}%  ΔP {s.pumpDP.toFixed(1)}</text>
 
-          <text x="450" y="910" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">
+          <text x="450" y="910" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">
             P-201 Centrifugal Crude Pump — {s.pumpRunning ? "RUNNING" : "STOPPED"}
           </text>
         </g>
@@ -308,10 +308,10 @@ export function OilPlantView() {
           {/* Utility nozzles */}
           <rect x="320" y="1022" width="18" height="20" fill="#3a4258" />
           <rect x="562" y="1138" width="18" height="20" fill="#3a4258" />
-          <text x="329" y="1015" fill="#ff5577" fontSize="10" className="scada-value">UT IN</text>
-          <text x="571" y="1175" fill="#ff5577" fontSize="10" className="scada-value">UT OUT</text>
-          <text x="450" y="1175" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">E-201 Shell &amp; Tube HX</text>
-          <text x="450" y="1192" textAnchor="middle" fill="#ff8a4d" fontSize="11" className="scada-value">
+          <text x="329" y="1015" fill="#ff5577" fontSize="12" className="scada-value">UT IN</text>
+          <text x="571" y="1175" fill="#ff5577" fontSize="12" className="scada-value">UT OUT</text>
+          <text x="450" y="1175" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">E-201 Shell &amp; Tube HX</text>
+          <text x="450" y="1192" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
             {s.hxCrudeIn.toFixed(0)}→{s.hxCrudeOut.toFixed(0)}°C · Q {s.hxDuty.toFixed(0)} kW · LMTD {s.hxLMTD.toFixed(1)}°C
           </text>
         </g>
@@ -331,8 +331,8 @@ export function OilPlantView() {
               <animate attributeName="opacity" values="0.2;1;0.2" dur="0.6s" repeatCount="indefinite" begin={`${i*0.1}s`} />
             </line>
           ))}
-          <text x="450" y="1255" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">D-201 Electrostatic Dehydrator</text>
-          <text x="450" y="1272" textAnchor="middle" fill="#ff8a4d" fontSize="11" className="scada-value">
+          <text x="450" y="1255" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">D-201 Electrostatic Dehydrator</text>
+          <text x="450" y="1272" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
             BS&amp;W {s.bswIn.toFixed(2)}→{s.bswOut.toFixed(2)}% · {s.dehydratorKV.toFixed(0)} kV
           </text>
         </g>
@@ -353,8 +353,8 @@ export function OilPlantView() {
           {/* Level gauge */}
           <rect x="600" y="1320" width="12" height="200" fill="#0a0e1a" stroke="#3a4258" />
           <rect x="600" y={1520 - (s.tankLevel / 100) * 200} width="12" height={(s.tankLevel / 100) * 200} fill="#ff8a4d" />
-          <text x="450" y="1545" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">TK-201 Floating Roof Storage Tank</text>
-          <text x="450" y="1563" textAnchor="middle" fill="#ff8a4d" fontSize="12" className="scada-value">
+          <text x="450" y="1545" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">TK-201 Floating Roof Storage Tank</text>
+          <text x="450" y="1563" textAnchor="middle" fill="#ff8a4d" fontSize="14" className="scada-value">
             Lvl {s.tankLevel.toFixed(0)}% · {s.tankVolume.toFixed(0)} m³ · {s.tankTemp.toFixed(0)}°C
           </text>
         </g>
@@ -366,14 +366,14 @@ export function OilPlantView() {
 
         {/* Export valve XV-202 */}
         <GateValve x={700} y={1590} label="XV-202" open={s.exportValve} orient="v" onClick={sel("XV-202")} />
-        <text x={700} y={1655} textAnchor="middle" fill="#9aa3b8" fontSize="12" className="scada-value">→ EXPORT</text>
+        <text x={700} y={1655} textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">→ EXPORT</text>
         <polygon points="700,1670 693,1655 707,1655" fill={OIL} />
 
         {/* ============ RIGHT BRANCH: WATER TREATMENT ============ */}
         {/* Branch banner */}
         <g>
           <rect x="720" y="650" width="170" height="22" fill="#0a0e1a" stroke={WATER} strokeWidth="1" rx="3" />
-          <text x="805" y="666" textAnchor="middle" fill={WATER} fontSize="11" className="scada-value">PRODUCED WATER TREATMENT</text>
+          <text x="805" y="666" textAnchor="middle" fill={WATER} fontSize="13" className="scada-value">PRODUCED WATER TREATMENT</text>
         </g>
 
         {/* WT-201 Water Treatment vessel */}
@@ -382,8 +382,8 @@ export function OilPlantView() {
           {[0,1,2,3,4].map(i => (
             <line key={i} x1="755" y1={720 + i*18} x2="885" y2={720 + i*18} stroke={WATER} strokeWidth="1.5" opacity="0.6" />
           ))}
-          <text x="820" y="845" textAnchor="middle" fill={WATER} fontSize="13" className="scada-value">WT-201 Water Treatment</text>
-          <text x="820" y="862" textAnchor="middle" fill={s.wtOilInWater > 40 ? "#ff4444" : "#00ff88"} fontSize="12" className="scada-value">
+          <text x="820" y="845" textAnchor="middle" fill={WATER} fontSize="16" className="scada-value">WT-201 Water Treatment</text>
+          <text x="820" y="862" textAnchor="middle" fill={s.wtOilInWater > 40 ? "#ff4444" : "#00ff88"} fontSize="14" className="scada-value">
             {s.wtOilInWater.toFixed(0)} ppm O-in-W
           </text>
         </g>
@@ -397,8 +397,8 @@ export function OilPlantView() {
           <g clipPath="url(#wtankClip)">
             <rect x="720" y={1100 - (s.waterLevel * 1.5)} width="200" height={s.waterLevel * 1.5 + 4} fill="url(#oWater)" opacity="0.85" />
           </g>
-          <text x="820" y="1125" textAnchor="middle" fill={WATER} fontSize="13" className="scada-value">Water Storage</text>
-          <text x="820" y="1142" textAnchor="middle" fill="#9aa3b8" fontSize="11" className="scada-value">{(s.waterLevel * 12).toFixed(0)} m³ · {s.sepTemp.toFixed(0)}°C</text>
+          <text x="820" y="1125" textAnchor="middle" fill={WATER} fontSize="16" className="scada-value">Water Storage</text>
+          <text x="820" y="1142" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{(s.waterLevel * 12).toFixed(0)} m³ · {s.sepTemp.toFixed(0)}°C</text>
         </g>
 
         {/* Pipe legend already shown outside SVG */}
@@ -459,9 +459,9 @@ function SensorBadge({ x, y, type, id, value, onClick }: { x: number; y: number;
     <g onClick={onClick} className={onClick ? "cursor-pointer" : ""}>
       <circle cx={x} cy={y} r="16" fill={colors[type]} opacity="0.18" />
       <circle cx={x} cy={y} r="11" fill={colors[type]} stroke="#0a0e1a" strokeWidth="2" />
-      <text x={x} y={y + 4} textAnchor="middle" fill="#0a0e1a" fontSize="9" fontWeight="700">{type}</text>
-      <text x={x} y={y + 28} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{id}</text>
-      {value && <text x={x} y={y + 42} textAnchor="middle" fill="#ff8a4d" fontSize="9" className="scada-value">{value}</text>}
+      <text x={x} y={y + 4} textAnchor="middle" fill="#0a0e1a" fontSize="11" fontWeight="700">{type}</text>
+      <text x={x} y={y + 28} textAnchor="middle" fill="#9aa3b8" fontSize="12" className="scada-value">{id}</text>
+      {value && <text x={x} y={y + 42} textAnchor="middle" fill="#ff8a4d" fontSize="11" className="scada-value">{value}</text>}
     </g>
   );
 }
@@ -480,8 +480,8 @@ function GateValve({ x, y, label, open, orient = "v", onClick }: { x: number; y:
       {/* stem */}
       <rect x={x-3} y={y-r-10} width="6" height="10" fill="#3a4258" />
       <line x1={x-9} y1={y-r-12} x2={x+9} y2={y-r-12} stroke="#0080ff" strokeWidth="2.5" />
-      <text x={x + r + 8} y={y + 4} fill="#9aa3b8" fontSize="11" className="scada-value">{label}</text>
-      <text x={x + r + 8} y={y + 18} fill={c} fontSize="10" className="scada-value">{open >= 95 ? "OPEN" : open <= 5 ? "CLOSED" : `${open.toFixed(0)}%`}</text>
+      <text x={x + r + 8} y={y + 4} fill="#9aa3b8" fontSize="13" className="scada-value">{label}</text>
+      <text x={x + r + 8} y={y + 18} fill={c} fontSize="12" className="scada-value">{open >= 95 ? "OPEN" : open <= 5 ? "CLOSED" : `${open.toFixed(0)}%`}</text>
     </g>
   );
 }
@@ -501,8 +501,8 @@ function ControlValve({ x, y, label, open, tag, orient = "v", onClick }: { x: nu
       <rect x={x-2} y={y-r-22} width="4" height="22" fill="#3a4258" />
       <circle cx={x} cy={y-r-30} r="12" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
       <polygon points={`${x-6},${y-r-30} ${x+6},${y-r-30} ${x},${y-r-22}`} fill="#0080ff" />
-      <text x={x + r + 8} y={y - 4} fill="#9aa3b8" fontSize="11" className="scada-value">{label}</text>
-      <text x={x + r + 8} y={y + 12} fill={c} fontSize="10" className="scada-value">{tag || `${open.toFixed(0)}%`}</text>
+      <text x={x + r + 8} y={y - 4} fill="#9aa3b8" fontSize="13" className="scada-value">{label}</text>
+      <text x={x + r + 8} y={y + 12} fill={c} fontSize="12" className="scada-value">{tag || `${open.toFixed(0)}%`}</text>
     </g>
   );
 }
@@ -519,7 +519,7 @@ function CheckValve({ x, y, label, orient = "v", onClick }: { x: number; y: numb
       {orient === "v"
         ? <line x1={x-r} y1={y+r+2} x2={x+r} y2={y+r+2} stroke="#0080ff" strokeWidth="2.5" />
         : <line x1={x+r+2} y1={y-r} x2={x+r+2} y2={y+r} stroke="#0080ff" strokeWidth="2.5" />}
-      <text x={x + r + 8} y={y + 4} fill="#9aa3b8" fontSize="11" className="scada-value">{label}</text>
+      <text x={x + r + 8} y={y + 4} fill="#9aa3b8" fontSize="13" className="scada-value">{label}</text>
     </g>
   );
 }
@@ -537,9 +537,9 @@ function PSV({ x, y, label, setP, actual, open, onClick }: { x: number; y: numbe
       {/* outlet */}
       <rect x={x+12} y={y-8} width="14" height="8" fill="#3a4258" />
       <circle cx={x} cy={y+10} r="4" fill={c} />
-      <text x={x - 36} y={y - 4} textAnchor="end" fill="#9aa3b8" fontSize="10" className="scada-value">{label}</text>
-      <text x={x - 36} y={y + 10} textAnchor="end" fill={c} fontSize="9" className="scada-value">SP {setP} bar</text>
-      <text x={x - 36} y={y + 22} textAnchor="end" fill={open ? "#ff4444" : "#7d869c"} fontSize="9" className="scada-value">{open ? "RELIEVING" : "CLOSED"}</text>
+      <text x={x - 36} y={y - 4} textAnchor="end" fill="#9aa3b8" fontSize="12" className="scada-value">{label}</text>
+      <text x={x - 36} y={y + 10} textAnchor="end" fill={c} fontSize="11" className="scada-value">SP {setP} bar</text>
+      <text x={x - 36} y={y + 22} textAnchor="end" fill={open ? "#ff4444" : "#7d869c"} fontSize="11" className="scada-value">{open ? "RELIEVING" : "CLOSED"}</text>
     </g>
   );
 }
