@@ -4,7 +4,7 @@ import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X } from "lucide-react";
 
 // Portrait viewBox — top-to-bottom P&ID flow
 const VBW = 900;
-const VBH = 1700;
+const VBH = 1680;
 
 const OIL = "#c87534";
 const WATER = "#0099ff";
