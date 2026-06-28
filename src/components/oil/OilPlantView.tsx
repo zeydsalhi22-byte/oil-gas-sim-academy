@@ -58,19 +58,19 @@ export function OilPlantView() {
   const psv201Open = s.sepPressure > 15;
   const psv202Open = s.vaporP > 5;
 
-  // Vertical pipe paths
+  // Horizontal pipe paths — all flow left-to-right along y=400 main axis
   const P = {
-    whSdv:   "M 450 230 L 450 280",                                   // wellhead down to SDV
-    sdvChoke:"M 450 320 L 450 360",                                   // SDV down to choke
-    chokeSep:"M 450 400 L 450 460",                                   // choke into separator top
-    sepGasUp:"M 250 460 L 250 380 L 80 380",                          // gas out top-left → off screen
-    sepOilDown:"M 500 600 L 500 660 L 450 660 L 450 760",             // oil bottom-center → pump suction
-    pumpOut: "M 450 880 L 450 940",                                   // pump discharge → HX
-    hxOut:   "M 450 1040 L 450 1100",                                 // HX → dehy
-    dehyOut: "M 450 1230 L 450 1290",                                 // dehy → tank
-    tankOut: "M 590 1490 L 700 1490 L 700 1560",                      // tank → export (down)
-    sepWaterDown:"M 650 600 L 650 720 L 760 720",                     // water bottom-right → WT
-    wtOut:   "M 820 800 L 820 880",                                   // WT → water tank
+    whSdv:        "M 200 400 L 230 400",
+    sdvChoke:     "M 260 400 L 290 400",
+    chokeSep:     "M 320 400 L 360 400",
+    sepGasUp:     "M 430 340 L 430 220 L 80 220",
+    sepOilOut:    "M 740 440 L 800 440 L 800 410 L 870 410",
+    pumpDisch:    "M 1035 400 L 1200 400",
+    hxOut:        "M 1440 400 L 1480 400",
+    dehyOut:      "M 1660 400 L 1700 400",
+    tankOut:      "M 1940 400 L 1985 400",
+    sepWaterDown: "M 560 460 L 560 640",
+    wtOut:        "M 560 770 L 560 830 L 700 830 L 700 730",
   };
 
   return (
@@ -118,142 +118,132 @@ export function OilPlantView() {
 
         <rect width={VBW} height={VBH} fill="url(#oGrid)" />
 
-        {/* === Pipes (thickness scales with flow) === */}
+        {/* === Pipes === */}
         <Pipe d={P.whSdv} color={OIL} thick={14} />
         <Pipe d={P.sdvChoke} color={OIL} thick={14} />
         <Pipe d={P.chokeSep} color={OIL} thick={Math.max(8, Math.min(18, s.inletFlow / 12))} />
         <Pipe d={P.sepGasUp} color={GAS} dashed thick={Math.max(6, Math.min(14, s.sepGasFlow / 80))} />
-        <Pipe d={P.sepOilDown} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
-        <Pipe d={P.pumpOut} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
+        <Pipe d={P.sepOilOut} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
+        <Pipe d={P.pumpDisch} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
         <Pipe d={P.hxOut} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
         <Pipe d={P.dehyOut} color={OIL} thick={Math.max(8, Math.min(16, s.crudeFlow / 14))} />
         <Pipe d={P.tankOut} color={OIL} thick={12} />
         <Pipe d={P.sepWaterDown} color={WATER} thick={12} />
         <Pipe d={P.wtOut} color={WATER} thick={10} />
 
-        <Particles href="#op-whSdv" color={OIL} n={3} d={2.6} />
-        <Particles href="#op-sdvChoke" color={OIL} n={3} d={2.6} />
-        <Particles href="#op-chokeSep" color={OIL} n={3} d={2.6} />
-        <Particles href="#op-sepGasUp" color={GAS} n={5} d={2.4} />
-        <Particles href="#op-sepOilDown" color={OIL} n={4} d={2.6} />
-        <Particles href="#op-pumpOut" color={OIL} n={4} d={2.2} />
-        <Particles href="#op-hxOut" color={OIL} n={3} d={2.6} />
-        <Particles href="#op-dehyOut" color={OIL} n={3} d={2.6} />
-        <Particles href="#op-tankOut" color={OIL} n={3} d={3} />
-        <Particles href="#op-sepWaterDown" color={WATER} n={5} d={2.8} />
-        <Particles href="#op-wtOut" color={WATER} n={4} d={2.8} />
+        <Particles href="#op-whSdv" color={OIL} n={2} d={2.4} />
+        <Particles href="#op-sdvChoke" color={OIL} n={2} d={2.4} />
+        <Particles href="#op-chokeSep" color={OIL} n={2} d={2.4} />
+        <Particles href="#op-sepGasUp" color={GAS} n={5} d={2.6} />
+        <Particles href="#op-sepOilOut" color={OIL} n={3} d={2.4} />
+        <Particles href="#op-pumpDisch" color={OIL} n={4} d={2.2} />
+        <Particles href="#op-hxOut" color={OIL} n={2} d={2.4} />
+        <Particles href="#op-dehyOut" color={OIL} n={2} d={2.4} />
+        <Particles href="#op-tankOut" color={OIL} n={2} d={2.8} />
+        <Particles href="#op-sepWaterDown" color={WATER} n={4} d={2.8} />
+        <Particles href="#op-wtOut" color={WATER} n={4} d={3.0} />
 
         {/* === Wellhead WH-201 === */}
         <g onClick={sel("well")} className="cursor-pointer">
-          <rect x="380" y="100" width="140" height="110" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
-          <rect x="360" y="80" width="180" height="25" rx="3" fill="url(#oMetal)" stroke="#3a4258" />
-          <rect x="420" y="40" width="60" height="50" fill="url(#oMetal)" stroke="#3a4258" />
-          <circle cx="450" cy="155" r="12" fill="#ff4444" className="pulse-glow" />
+          <rect x="60" y="320" width="140" height="200" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
+          <rect x="40" y="300" width="180" height="25" rx="3" fill="url(#oMetal)" stroke="#3a4258" />
+          <rect x="110" y="240" width="40" height="60" fill="url(#oMetal)" stroke="#3a4258" />
+          <circle cx="130" cy="395" r="12" fill="#ff4444" className="pulse-glow" />
           {/* hand wheel */}
-          <circle cx="340" cy="155" r="18" fill="none" stroke="#0066cc" strokeWidth="3" />
-          <line x1="322" y1="155" x2="358" y2="155" stroke="#0066cc" strokeWidth="3" />
-          <line x1="340" y1="137" x2="340" y2="173" stroke="#0066cc" strokeWidth="3" />
-          <text x="450" y="20" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">WH-201 Wellhead</text>
-          <text x="450" y="240" textAnchor="middle" fill="#ff8a4d" fontSize="16" className="scada-value">
+          <circle cx="30" cy="395" r="18" fill="none" stroke="#0066cc" strokeWidth="3" />
+          <line x1="12" y1="395" x2="48" y2="395" stroke="#0066cc" strokeWidth="3" />
+          <line x1="30" y1="377" x2="30" y2="413" stroke="#0066cc" strokeWidth="3" />
+          <text x="130" y="225" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">WH-201 Wellhead</text>
+          <text x="130" y="550" textAnchor="middle" fill="#ff8a4d" fontSize="16" className="scada-value">
             {s.wellPressure.toFixed(0)} bar · {s.wellTemp.toFixed(0)}°C
           </text>
         </g>
-        <SensorBadge x={580} y={150} type="PT" id="PT-201" value={`${s.wellPressure.toFixed(0)} bar`} onClick={sel("PT-201")} />
-        <SensorBadge x={580} y={190} type="TT" id="TT-201" value={`${s.wellTemp.toFixed(0)}°C`} onClick={sel("TT-201")} />
+        <SensorBadge x={110} y={580} type="PT" id="PT-201" value={`${s.wellPressure.toFixed(0)} bar`} onClick={sel("PT-201")} />
+        <SensorBadge x={170} y={580} type="TT" id="TT-201" value={`${s.wellTemp.toFixed(0)}°C`} onClick={sel("TT-201")} />
 
-        {/* === SDV-201 Shutdown Gate Valve === */}
-        <GateValve x={450} y={300} label="SDV-201" open={100} orient="v" onClick={sel("SDV-201")} />
-
-        {/* === CV-201 Choke Control Valve === */}
-        <ControlValve x={450} y={380} label="CV-201" open={s.chokeOpen} tag="" orient="v" onClick={sel("CV-201")} />
+        {/* === SDV-201 + CV-201 inline === */}
+        <GateValve x={245} y={400} label="SDV-201" open={100} orient="h" onClick={sel("SDV-201")} />
+        <ControlValve x={305} y={400} label="CV-201" open={s.chokeOpen} tag="" orient="h" onClick={sel("CV-201")} />
 
         {/* === 3-Phase Separator V-201 (horizontal) === */}
         <g onClick={sel("sep")} className="cursor-pointer">
           {/* Saddle supports */}
-          <path d="M 220 600 L 200 660 L 260 660 L 260 600 Z" fill="#1a2030" stroke="#3a4258" />
-          <path d="M 600 600 L 580 660 L 640 660 L 640 600 Z" fill="#1a2030" stroke="#3a4258" />
+          <path d="M 410 460 L 390 520 L 450 520 L 450 460 Z" fill="#1a2030" stroke="#3a4258" />
+          <path d="M 680 460 L 660 520 L 720 520 L 720 460 Z" fill="#1a2030" stroke="#3a4258" />
           {/* Left elliptical head */}
-          <path d="M 160 460 A 30 70 0 0 0 160 600 L 180 600 L 180 460 Z" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <path d="M 360 340 A 28 60 0 0 0 360 460 L 380 460 L 380 340 Z" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
           {/* Cylindrical shell */}
-          <rect x="180" y="460" width="540" height="140" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <rect x="380" y="340" width="340" height="120" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
           {/* Right elliptical head */}
-          <path d="M 720 460 A 30 70 0 0 1 720 600 L 700 600 L 700 460 Z" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <path d="M 720 340 A 28 60 0 0 1 720 460 L 700 460 L 700 340 Z" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
 
-          {/* Three layers inside */}
-          <clipPath id="sepClipV201"><rect x="181" y="461" width="538" height="138" /></clipPath>
+          <clipPath id="sepClipV201"><rect x="381" y="341" width="338" height="118" /></clipPath>
           <g clipPath="url(#sepClipV201)">
-            <rect x="180" y={600 - (s.waterLevel / 100) * 70} width="540" height={(s.waterLevel / 100) * 70 + 4} fill="url(#oWater)" opacity="0.9" />
-            <rect x="180" y={600 - (s.waterLevel / 100) * 70 - (s.oilLevel / 100) * 60} width="540" height={(s.oilLevel / 100) * 60} fill="url(#oOil)" opacity="0.9" />
-            <line x1="180" y1={600 - (s.waterLevel / 100) * 70} x2="720" y2={600 - (s.waterLevel / 100) * 70} stroke="#a5ddff" strokeWidth="2" opacity="0.8" />
-            <line x1="180" y1={600 - (s.waterLevel / 100) * 70 - (s.oilLevel / 100) * 60} x2="720" y2={600 - (s.waterLevel / 100) * 70 - (s.oilLevel / 100) * 60} stroke="#ffd9a0" strokeWidth="2" opacity="0.8" />
-            {/* Weir between oil & water buckets */}
-            <rect x="540" y="490" width="6" height="110" fill="#1a2030" />
+            <rect x="380" y={460 - (s.waterLevel / 100) * 60} width="340" height={(s.waterLevel / 100) * 60 + 4} fill="url(#oWater)" opacity="0.9" />
+            <rect x="380" y={460 - (s.waterLevel / 100) * 60 - (s.oilLevel / 100) * 50} width="340" height={(s.oilLevel / 100) * 50} fill="url(#oOil)" opacity="0.9" />
+            <line x1="380" y1={460 - (s.waterLevel / 100) * 60} x2="720" y2={460 - (s.waterLevel / 100) * 60} stroke="#a5ddff" strokeWidth="2" opacity="0.8" />
+            <line x1="380" y1={460 - (s.waterLevel / 100) * 60 - (s.oilLevel / 100) * 50} x2="720" y2={460 - (s.waterLevel / 100) * 60 - (s.oilLevel / 100) * 50} stroke="#ffd9a0" strokeWidth="2" opacity="0.8" />
+            {/* Weir */}
+            <rect x="620" y="370" width="6" height="90" fill="#1a2030" />
             {/* Mist extractor */}
-            <rect x="200" y="468" width="100" height="10" fill="#3a4258" opacity="0.6" />
+            <rect x="400" y="348" width="100" height="10" fill="#3a4258" opacity="0.6" />
           </g>
 
-          {/* Inlet nozzle (top) */}
-          <rect x="443" y="446" width="14" height="20" fill="#3a4258" />
-          {/* Gas outlet (top left) */}
-          <rect x="243" y="446" width="14" height="20" fill="#3a4258" />
-          {/* Oil outlet (bottom, right of weir) */}
-          <rect x="493" y="598" width="14" height="20" fill="#3a4258" />
-          {/* Water outlet (bottom, right side) */}
-          <rect x="643" y="598" width="14" height="20" fill="#3a4258" />
-
+          {/* Inlet nozzle (left side) */}
+          <rect x="358" y="393" width="14" height="14" fill="#3a4258" />
+          {/* Gas outlet (top) */}
+          <rect x="423" y="328" width="14" height="14" fill="#3a4258" />
+          {/* Oil outlet (right, bottom) */}
+          <rect x="726" y="433" width="14" height="14" fill="#3a4258" />
+          {/* Water outlet (bottom) */}
+          <rect x="553" y="458" width="14" height="14" fill="#3a4258" />
           {/* Manway */}
-          <circle cx="400" cy="500" r="14" fill="none" stroke="#3a4258" strokeWidth="2" />
+          <circle cx="500" cy="380" r="12" fill="none" stroke="#3a4258" strokeWidth="2" />
 
-          {/* Label box */}
-          <rect x="360" y="525" width="100" height="26" fill="#0a0e1a" stroke="#3a4258" />
-          <text x="410" y="544" textAnchor="middle" fill="#0080ff" fontSize="17" className="scada-value">V-201</text>
+          <rect x="510" y="403" width="90" height="24" fill="#0a0e1a" stroke="#3a4258" />
+          <text x="555" y="421" textAnchor="middle" fill="#0080ff" fontSize="16" className="scada-value">V-201</text>
 
-          <text x="450" y="685" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">3-Phase Separator V-201</text>
-          <text x="450" y="703" textAnchor="middle" fill="#ff8a4d" fontSize="14" className="scada-value">
+          <text x="550" y="555" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">3-Phase Separator V-201</text>
+          <text x="550" y="573" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
             Oil {s.oilLevel.toFixed(0)}% · Water {s.waterLevel.toFixed(0)}% · BS&amp;W {s.bsw.toFixed(2)}% · {s.sepPressure.toFixed(1)} bar
           </text>
         </g>
 
-        {/* Separator sensors */}
-        <SensorBadge x={130} y={500} type="PT" id="PT-202" value={`${s.sepPressure.toFixed(1)} bar`} onClick={sel("PT-202")} />
-        <SensorBadge x={130} y={540} type="TT" id="TT-202" value={`${s.sepTemp.toFixed(0)}°C`} onClick={sel("TT-202")} />
-        <SensorBadge x={770} y={500} type="LT" id="LT-201" value={`${s.oilLevel.toFixed(0)}%`} onClick={sel("LT-201")} />
-        <SensorBadge x={770} y={555} type="LT" id="LT-202" value={`${s.waterLevel.toFixed(0)}%`} onClick={sel("LT-202")} />
-        <SensorBadge x={350} y={440} type="AT" id="AT-201" value={`${s.bsw.toFixed(2)}%`} onClick={sel("AT-201")} />
+        {/* Separator sensors (above shell) */}
+        <SensorBadge x={395} y={300} type="PT" id="PT-202" value={`${s.sepPressure.toFixed(1)} bar`} onClick={sel("PT-202")} />
+        <SensorBadge x={465} y={300} type="TT" id="TT-202" value={`${s.sepTemp.toFixed(0)}°C`} onClick={sel("TT-202")} />
+        <SensorBadge x={660} y={300} type="LT" id="LT-201" value={`${s.oilLevel.toFixed(0)}%`} onClick={sel("LT-201")} />
+        <SensorBadge x={595} y={300} type="LT" id="LT-202" value={`${s.waterLevel.toFixed(0)}%`} onClick={sel("LT-202")} />
+        <SensorBadge x={530} y={300} type="AT" id="AT-201" value={`${s.bsw.toFixed(2)}%`} onClick={sel("AT-201")} />
 
-        {/* PSV-201 on top of separator (left of gas outlet) */}
-        <PSV x={170} y={420} label="PSV-201" setP={15} actual={s.sepPressure} open={psv201Open} onClick={sel("PSV-201")} />
+        {/* PSV-201 on top of separator (right of gas outlet) */}
+        <PSV x={490} y={310} label="PSV-201" setP={15} actual={s.sepPressure} open={psv201Open} onClick={sel("PSV-201")} />
 
-        {/* Gas outlet to gas sector */}
-        <ControlValve x={250} y={420} label="PV-201" open={70} tag="" orient="v" onClick={sel("PV-201")} />
+        {/* Gas branch up + PV-201 */}
+        <ControlValve x={430} y={250} label="PV-201" open={70} tag="" orient="v" onClick={sel("PV-201")} />
         <g>
-          <text x="90" y="370" textAnchor="start" fill="#9aa3b8" fontSize="14" className="scada-value">→ TO GAS SECTOR</text>
-          <text x="90" y="388" textAnchor="start" fill="#ff8a4d" fontSize="13" className="scada-value">{s.sepGasFlow.toFixed(0)} m³/h</text>
-          <polygon points="60,380 75,373 75,387" fill={GAS} />
+          <text x="90" y="200" textAnchor="start" fill="#9aa3b8" fontSize="14" className="scada-value">→ TO GAS SECTOR</text>
+          <text x="90" y="240" textAnchor="start" fill="#ff8a4d" fontSize="13" className="scada-value">{s.sepGasFlow.toFixed(0)} m³/h</text>
+          <polygon points="60,220 75,213 75,227" fill={GAS} />
         </g>
 
-        {/* === LV-201 oil level control valve on oil pipe === */}
-        <ControlValve x={500} y={640} label="LV-201" open={s.lv201} tag={`${s.lv201.toFixed(0)}%`} orient="v" onClick={sel("LV-201")} />
+        {/* === LV-201 oil control valve + XV-201 suction === */}
+        <ControlValve x={770} y={440} label="LV-201" open={s.lv201} tag={`${s.lv201.toFixed(0)}%`} orient="h" onClick={sel("LV-201")} />
+        <GateValve x={845} y={410} label="XV-201" open={100} orient="h" onClick={sel("XV-201")} />
 
-        {/* === LV-202 water control valve === */}
-        <ControlValve x={720} y={720} label="LV-202" open={s.lv202} tag={`${s.lv202.toFixed(0)}%`} orient="h" onClick={sel("LV-202")} />
-
-        {/* === XV-201 pump suction isolation === */}
-        <GateValve x={450} y={730} label="XV-201" open={s.pumpRunning ? 100 : 100} orient="v" onClick={sel("XV-201")} />
-
-        {/* === Crude Pump P-201 (large, centered) === */}
+        {/* === Crude Pump P-201 (centered) === */}
         <g onClick={sel("pump")} className="cursor-pointer">
           {/* Skid */}
-          <rect x="320" y="870" width="260" height="18" fill="#1a2030" stroke="#3a4258" />
-          {/* Motor (left) */}
-          <rect x="320" y="780" width="80" height="100" rx="6" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
-          {[0,1,2,3,4].map(i => <line key={i} x1="328" y1={790+i*18} x2="392" y2={790+i*18} stroke="#1a2030" strokeWidth="1.5" />)}
-          <rect x="395" y="822" width="20" height="16" fill="#3a4258" />
+          <rect x="855" y="478" width="220" height="16" fill="#1a2030" stroke="#3a4258" />
+          {/* Motor (left of pump) */}
+          <rect x="855" y="360" width="75" height="118" rx="6" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
+          {[0,1,2,3,4,5].map(i => <line key={i} x1="862" y1={370+i*18} x2="923" y2={370+i*18} stroke="#1a2030" strokeWidth="1.5" />)}
+          <rect x="925" y="395" width="15" height="14" fill="#3a4258" />
           {/* Pump casing (volute) */}
-          <circle cx="470" cy="830" r="55" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="2" />
-          <circle cx="470" cy="830" r="42" fill="#0a0e1a" stroke="#3a4258" strokeWidth="1.5" />
-          {/* Impeller — translated to pump center, rotation contained via SVG animateTransform */}
-          <g transform="translate(470 830)">
+          <circle cx="980" cy="400" r="55" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="2" />
+          <circle cx="980" cy="400" r="42" fill="#0a0e1a" stroke="#3a4258" strokeWidth="1.5" />
+          {/* Impeller — rotation contained inside casing */}
+          <g transform="translate(980 400)">
             <g>
               {s.pumpRunning && (
                 <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.6s" repeatCount="indefinite" />
@@ -274,158 +264,128 @@ export function OilPlantView() {
               <circle r="6" fill="#0080ff" />
             </g>
           </g>
-          {/* Discharge stub (up from casing) */}
-          <rect x="462" y="765" width="16" height="20" fill="#3a4258" />
+          {/* Discharge stub (right side) */}
+          <rect x="1025" y="392" width="20" height="16" fill="#3a4258" />
 
-          {/* Label box */}
-          <rect x="535" y="800" width="120" height="80" fill="#0a0e1a" stroke="#3a4258" rx="3" />
-          <text x="595" y="820" textAnchor="middle" fill="#0080ff" fontSize="16" className="scada-value">P-201</text>
-          <text x="595" y="838" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">{s.pumpFlow.toFixed(0)} m³/h</text>
-          <text x="595" y="852" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{s.pumpRpm.toFixed(0)} rpm</text>
-          <text x="595" y="866" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">η {s.pumpEff.toFixed(0)}%  ΔP {s.pumpDP.toFixed(1)}</text>
-
-          <text x="450" y="910" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">
-            P-201 Centrifugal Crude Pump — {s.pumpRunning ? "RUNNING" : "STOPPED"}
+          {/* Label box (below pump) */}
+          <rect x="900" y="510" width="160" height="80" fill="#0a0e1a" stroke="#3a4258" rx="3" />
+          <text x="980" y="530" textAnchor="middle" fill="#0080ff" fontSize="16" className="scada-value">P-201</text>
+          <text x="980" y="548" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">{s.pumpFlow.toFixed(0)} m³/h</text>
+          <text x="980" y="562" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{s.pumpRpm.toFixed(0)} rpm</text>
+          <text x="980" y="576" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">η {s.pumpEff.toFixed(0)}%  ΔP {s.pumpDP.toFixed(1)}</text>
+          <text x="980" y="610" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">
+            P-201 — {s.pumpRunning ? "RUNNING" : "STOPPED"}
           </text>
         </g>
-        <SensorBadge x={395} y={760} type="PT" id="PT-203" value={`${(s.sepPressure*0.9).toFixed(1)} bar`} onClick={sel("PT-203")} />
-        <SensorBadge x={395} y={905} type="FT" id="FT-201" value={`${s.pumpFlow.toFixed(0)} m³/h`} onClick={sel("FT-201")} />
+        <SensorBadge x={890} y={335} type="PT" id="PT-203" value={`${(s.sepPressure*0.9).toFixed(1)} bar`} onClick={sel("PT-203")} />
+        <SensorBadge x={1080} y={335} type="FT" id="FT-201" value={`${s.pumpFlow.toFixed(0)} m³/h`} onClick={sel("FT-201")} />
 
-        {/* === CV-202 check valve (post-pump) === */}
-        <CheckValve x={450} y={960} label="CV-202" orient="v" onClick={sel("CV-202")} />
-
-        {/* === FV-201 flow control === */}
-        <ControlValve x={450} y={1000} label="FV-201" open={s.fv201} tag={`${s.fv201.toFixed(0)}%`} orient="v" onClick={sel("FV-201")} />
+        {/* === CV-202 check + FV-201 flow control === */}
+        <CheckValve x={1085} y={400} label="CV-202" orient="h" onClick={sel("CV-202")} />
+        <ControlValve x={1140} y={400} label="FV-201" open={s.fv201} tag={`${s.fv201.toFixed(0)}%`} orient="h" onClick={sel("FV-201")} />
 
         {/* === Heat Exchanger E-201 === */}
         <g onClick={sel("hx")} className="cursor-pointer">
-          <rect x="290" y="1040" width="320" height="100" rx="8" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
+          <rect x="1200" y="350" width="240" height="100" rx="8" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
           {[0,1,2,3,4,5,6].map(i => (
-            <line key={i} x1="300" y1={1055 + i*12} x2="600" y2={1055 + i*12} stroke="#0080ff" strokeWidth="2" opacity="0.6" />
+            <line key={i} x1="1210" y1={365 + i*12} x2="1430" y2={365 + i*12} stroke="#0080ff" strokeWidth="2" opacity="0.6" />
           ))}
-          <rect x="280" y="1040" width="12" height="100" fill="#3a4258" />
-          <rect x="608" y="1040" width="12" height="100" fill="#3a4258" />
+          <rect x="1190" y="350" width="12" height="100" fill="#3a4258" />
+          <rect x="1438" y="350" width="12" height="100" fill="#3a4258" />
           {/* Utility nozzles */}
-          <rect x="320" y="1022" width="18" height="20" fill="#3a4258" />
-          <rect x="562" y="1138" width="18" height="20" fill="#3a4258" />
-          <text x="329" y="1015" fill="#ff5577" fontSize="12" className="scada-value">UT IN</text>
-          <text x="571" y="1175" fill="#ff5577" fontSize="12" className="scada-value">UT OUT</text>
-          <text x="450" y="1175" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">E-201 Shell &amp; Tube HX</text>
-          <text x="450" y="1192" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
+          <rect x="1230" y="332" width="18" height="20" fill="#3a4258" />
+          <rect x="1392" y="448" width="18" height="20" fill="#3a4258" />
+          <text x="1239" y="325" fill="#ff5577" fontSize="12" className="scada-value">UT IN</text>
+          <text x="1401" y="485" fill="#ff5577" fontSize="12" className="scada-value">UT OUT</text>
+          <text x="1320" y="490" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">E-201 Shell &amp; Tube HX</text>
+          <text x="1320" y="507" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
             {s.hxCrudeIn.toFixed(0)}→{s.hxCrudeOut.toFixed(0)}°C · Q {s.hxDuty.toFixed(0)} kW · LMTD {s.hxLMTD.toFixed(1)}°C
           </text>
         </g>
-        <SensorBadge x={245} y={1090} type="TT" id="TT-202" value={`${s.hxCrudeIn.toFixed(0)}°C`} onClick={sel("TT-202")} />
-        <SensorBadge x={655} y={1090} type="TT" id="TT-203" value={`${s.hxCrudeOut.toFixed(0)}°C`} onClick={sel("TT-203")} />
-
-        {/* === TV-201 temperature control valve === */}
-        <ControlValve x={580} y={1180} label="TV-201" open={s.utilityFlow} tag={`${s.utilityFlow.toFixed(0)}%`} orient="h" onClick={sel("TV-201")} />
+        <SensorBadge x={1175} y={335} type="TT" id="TT-202" value={`${s.hxCrudeIn.toFixed(0)}°C`} onClick={sel("TT-202")} />
+        <SensorBadge x={1465} y={335} type="TT" id="TT-203" value={`${s.hxCrudeOut.toFixed(0)}°C`} onClick={sel("TT-203")} />
+        <ControlValve x={1410} y={500} label="TV-201" open={s.utilityFlow} tag={`${s.utilityFlow.toFixed(0)}%`} orient="v" onClick={sel("TV-201")} />
 
         {/* === Electrostatic Dehydrator D-201 === */}
         <g onClick={sel("dehy")} className="cursor-pointer">
-          <rect x="350" y="1100" width="200" height="130" rx="12" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
-          <line x1="370" y1="1125" x2="530" y2="1125" stroke={s.dehydratorOn ? "#ffcc00" : "#444"} strokeWidth="3" />
-          <line x1="370" y1="1205" x2="530" y2="1205" stroke={s.dehydratorOn ? "#ffcc00" : "#444"} strokeWidth="3" />
-          {s.dehydratorOn && [0,1,2,3,4,5,6,7].map(i => (
-            <line key={i} x1={380 + i*20} y1="1125" x2={380 + i*20} y2="1205" stroke="#ffee66" strokeWidth="1" strokeDasharray="2 3" opacity="0.7">
+          <rect x="1480" y="330" width="180" height="140" rx="12" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <line x1="1500" y1="355" x2="1640" y2="355" stroke={s.dehydratorOn ? "#ffcc00" : "#444"} strokeWidth="3" />
+          <line x1="1500" y1="445" x2="1640" y2="445" stroke={s.dehydratorOn ? "#ffcc00" : "#444"} strokeWidth="3" />
+          {s.dehydratorOn && [0,1,2,3,4,5,6].map(i => (
+            <line key={i} x1={1510 + i*20} y1="355" x2={1510 + i*20} y2="445" stroke="#ffee66" strokeWidth="1" strokeDasharray="2 3" opacity="0.7">
               <animate attributeName="opacity" values="0.2;1;0.2" dur="0.6s" repeatCount="indefinite" begin={`${i*0.1}s`} />
             </line>
           ))}
-          <text x="450" y="1255" textAnchor="middle" fill="#9aa3b8" fontSize="16" className="scada-value">D-201 Electrostatic Dehydrator</text>
-          <text x="450" y="1272" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
+          <text x="1570" y="490" textAnchor="middle" fill="#9aa3b8" fontSize="15" className="scada-value">D-201 Electrostatic Dehydrator</text>
+          <text x="1570" y="507" textAnchor="middle" fill="#ff8a4d" fontSize="13" className="scada-value">
             BS&amp;W {s.bswIn.toFixed(2)}→{s.bswOut.toFixed(2)}% · {s.dehydratorKV.toFixed(0)} kV
           </text>
         </g>
-        <SensorBadge x={310} y={1165} type="AT" id="AT-202" value={`${s.bswOut.toFixed(2)}%`} onClick={sel("AT-202")} />
+        <SensorBadge x={1670} y={520} type="AT" id="AT-202" value={`${s.bswOut.toFixed(2)}%`} onClick={sel("AT-202")} />
 
         {/* === Storage Tank TK-201 (floating roof) === */}
         <g onClick={sel("tank")} className="cursor-pointer">
-          <rect x="310" y="1300" width="280" height="220" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
-          <clipPath id="tankClip201"><rect x="311" y="1301" width="278" height="218" /></clipPath>
+          <rect x="1700" y="220" width="240" height="360" fill="url(#oVessel)" stroke="#3a4258" strokeWidth="1.5" />
+          <clipPath id="tankClip201"><rect x="1701" y="221" width="238" height="358" /></clipPath>
           <g clipPath="url(#tankClip201)">
-            <rect x="310" y={1520 - (s.tankLevel / 100) * 218} width="280" height={(s.tankLevel / 100) * 218 + 4} fill="url(#oOil)" opacity="0.85" />
-            <rect x="315" y={1520 - (s.tankLevel / 100) * 218 - 8} width="270" height="12" fill="#3a4258" stroke="#1a2030" />
-            <rect x="315" y={1520 - (s.tankLevel / 100) * 218 - 8} width="270" height="3" fill="#5a6480" />
+            <rect x="1700" y={580 - (s.tankLevel / 100) * 358} width="240" height={(s.tankLevel / 100) * 358 + 4} fill="url(#oOil)" opacity="0.85" />
+            <rect x="1705" y={580 - (s.tankLevel / 100) * 358 - 8} width="230" height="12" fill="#3a4258" stroke="#1a2030" />
+            <rect x="1705" y={580 - (s.tankLevel / 100) * 358 - 8} width="230" height="3" fill="#5a6480" />
           </g>
-          <line x1="310" y1="1300" x2="310" y2="1520" stroke="#3a4258" strokeWidth="3" />
-          <line x1="590" y1="1300" x2="590" y2="1520" stroke="#3a4258" strokeWidth="3" />
-          <line x1="590" y1="1520" x2="620" y2="1320" stroke="#3a4258" strokeWidth="2" />
+          <line x1="1700" y1="220" x2="1700" y2="580" stroke="#3a4258" strokeWidth="3" />
+          <line x1="1940" y1="220" x2="1940" y2="580" stroke="#3a4258" strokeWidth="3" />
           {/* Level gauge */}
-          <rect x="600" y="1320" width="12" height="200" fill="#0a0e1a" stroke="#3a4258" />
-          <rect x="600" y={1520 - (s.tankLevel / 100) * 200} width="12" height={(s.tankLevel / 100) * 200} fill="#ff8a4d" />
-          <text x="450" y="1545" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">TK-201 Floating Roof Storage Tank</text>
-          <text x="450" y="1563" textAnchor="middle" fill="#ff8a4d" fontSize="14" className="scada-value">
+          <rect x="1950" y="240" width="12" height="340" fill="#0a0e1a" stroke="#3a4258" />
+          <rect x="1950" y={580 - (s.tankLevel / 100) * 340} width="12" height={(s.tankLevel / 100) * 340} fill="#ff8a4d" />
+          <text x="1820" y="605" textAnchor="middle" fill="#9aa3b8" fontSize="17" className="scada-value">TK-201 Floating Roof Tank</text>
+          <text x="1820" y="623" textAnchor="middle" fill="#ff8a4d" fontSize="14" className="scada-value">
             Lvl {s.tankLevel.toFixed(0)}% · {s.tankVolume.toFixed(0)} m³ · {s.tankTemp.toFixed(0)}°C
           </text>
         </g>
-        <SensorBadge x={270} y={1380} type="LT" id="LT-203" value={`${s.tankLevel.toFixed(0)}%`} onClick={sel("LT-203")} />
-        <SensorBadge x={270} y={1430} type="TT" id="TT-204" value={`${s.tankTemp.toFixed(0)}°C`} onClick={sel("TT-204")} />
+        <SensorBadge x={1745} y={655} type="LT" id="LT-203" value={`${s.tankLevel.toFixed(0)}%`} onClick={sel("LT-203")} />
+        <SensorBadge x={1820} y={655} type="TT" id="TT-204" value={`${s.tankTemp.toFixed(0)}°C`} onClick={sel("TT-204")} />
 
-        {/* PSV-202 on tank */}
-        <PSV x={500} y={1280} label="PSV-202" setP={5} actual={s.vaporP} open={psv202Open} onClick={sel("PSV-202")} />
+        {/* PSV-202 on top of tank */}
+        <PSV x={1820} y={210} label="PSV-202" setP={5} actual={s.vaporP} open={psv202Open} onClick={sel("PSV-202")} />
 
         {/* Export valve XV-202 */}
-        <GateValve x={700} y={1590} label="XV-202" open={s.exportValve} orient="v" onClick={sel("XV-202")} />
-        <text x={700} y={1655} textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">→ EXPORT</text>
-        <polygon points="700,1670 693,1655 707,1655" fill={OIL} />
+        <GateValve x={1970} y={400} label="XV-202" open={s.exportValve} orient="h" onClick={sel("XV-202")} />
+        <text x={1970} y={460} textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">→ EXPORT</text>
 
-        {/* ============ RIGHT BRANCH: WATER TREATMENT ============ */}
-        {/* Branch banner */}
+        {/* ============ WATER BRANCH (down below separator) ============ */}
         <g>
-          <rect x="720" y="650" width="170" height="22" fill="#0a0e1a" stroke={WATER} strokeWidth="1" rx="3" />
-          <text x="805" y="666" textAnchor="middle" fill={WATER} fontSize="13" className="scada-value">PRODUCED WATER TREATMENT</text>
+          <rect x="455" y="600" width="210" height="22" fill="#0a0e1a" stroke={WATER} strokeWidth="1" rx="3" />
+          <text x="560" y="616" textAnchor="middle" fill={WATER} fontSize="13" className="scada-value">PRODUCED WATER TREATMENT</text>
         </g>
+
+        <ControlValve x={560} y={530} label="LV-202" open={s.lv202} tag={`${s.lv202.toFixed(0)}%`} orient="v" onClick={sel("LV-202")} />
 
         {/* WT-201 Water Treatment vessel */}
         <g onClick={sel("wt")} className="cursor-pointer">
-          <rect x="740" y="700" width="160" height="120" rx="8" fill="url(#oMetal)" stroke={WATER} strokeWidth="1.5" />
+          <rect x="470" y="640" width="180" height="130" rx="8" fill="url(#oMetal)" stroke={WATER} strokeWidth="1.5" />
           {[0,1,2,3,4].map(i => (
-            <line key={i} x1="755" y1={720 + i*18} x2="885" y2={720 + i*18} stroke={WATER} strokeWidth="1.5" opacity="0.6" />
+            <line key={i} x1="485" y1={660 + i*18} x2="635" y2={660 + i*18} stroke={WATER} strokeWidth="1.5" opacity="0.6" />
           ))}
-          <text x="820" y="845" textAnchor="middle" fill={WATER} fontSize="16" className="scada-value">WT-201 Water Treatment</text>
-          <text x="820" y="862" textAnchor="middle" fill={s.wtOilInWater > 40 ? "#ff4444" : "#00ff88"} fontSize="14" className="scada-value">
+          <text x="560" y="795" textAnchor="middle" fill={WATER} fontSize="15" className="scada-value">WT-201 Water Treatment</text>
+          <text x="560" y="812" textAnchor="middle" fill={s.wtOilInWater > 40 ? "#ff4444" : "#00ff88"} fontSize="13" className="scada-value">
             {s.wtOilInWater.toFixed(0)} ppm O-in-W
           </text>
         </g>
-        <SensorBadge x={905} y={750} type="AT" id="AT-202" value={`${s.wtOilInWater.toFixed(0)} ppm`} onClick={sel("AT-202")} />
-        <SensorBadge x={905} y={790} type="FT" id="FT-202" value={`${(s.lv202 * 0.6).toFixed(0)} m³/h`} onClick={sel("FT-202")} />
+        <SensorBadge x={420} y={690} type="AT" id="AT-202" value={`${s.wtOilInWater.toFixed(0)} ppm`} onClick={sel("AT-202")} />
+        <SensorBadge x={420} y={735} type="FT" id="FT-202" value={`${(s.lv202 * 0.6).toFixed(0)} m³/h`} onClick={sel("FT-202")} />
 
         {/* Water storage tank */}
         <g onClick={sel("wtank")} className="cursor-pointer">
-          <rect x="720" y="900" width="200" height="200" fill="url(#oVessel)" stroke={WATER} strokeWidth="1.5" rx="4" />
-          <clipPath id="wtankClip"><rect x="721" y="901" width="198" height="198" /></clipPath>
+          <rect x="680" y="640" width="180" height="180" fill="url(#oVessel)" stroke={WATER} strokeWidth="1.5" rx="4" />
+          <clipPath id="wtankClip"><rect x="681" y="641" width="178" height="178" /></clipPath>
           <g clipPath="url(#wtankClip)">
-            <rect x="720" y={1100 - (s.waterLevel * 1.5)} width="200" height={s.waterLevel * 1.5 + 4} fill="url(#oWater)" opacity="0.85" />
+            <rect x="680" y={820 - (s.waterLevel * 1.4)} width="180" height={s.waterLevel * 1.4 + 4} fill="url(#oWater)" opacity="0.85" />
           </g>
-          <text x="820" y="1125" textAnchor="middle" fill={WATER} fontSize="16" className="scada-value">Water Storage</text>
-          <text x="820" y="1142" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{(s.waterLevel * 12).toFixed(0)} m³ · {s.sepTemp.toFixed(0)}°C</text>
+          <text x="770" y="845" textAnchor="middle" fill={WATER} fontSize="15" className="scada-value">Water Storage</text>
+          <text x="770" y="862" textAnchor="middle" fill="#9aa3b8" fontSize="13" className="scada-value">{(s.waterLevel * 12).toFixed(0)} m³ · {s.sepTemp.toFixed(0)}°C</text>
         </g>
-
-        {/* Pipe legend already shown outside SVG */}
       </svg>
 
-      {/* Zoom controls */}
-      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1">
-        <button onClick={() => setUserZoom((z) => Math.min(4, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur"><ZoomIn className="h-4 w-4" /></button>
-        <button onClick={() => setUserZoom((z) => Math.max(0.3, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur"><ZoomOut className="h-4 w-4" /></button>
-        <button onClick={reset} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur" title="Fit to screen"><Maximize2 className="h-4 w-4" /></button>
-        <button onClick={reset} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur" title="Reset view"><RotateCcw className="h-4 w-4" /></button>
-        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(scale * 100)}%</div>
-      </div>
-
-      <div className="pointer-events-none absolute left-2 top-2 rounded-md border border-border bg-card/80 p-2 font-mono text-[10px] backdrop-blur">
-        <div className="mb-1 text-muted-foreground">LINES</div>
-        <div className="flex flex-wrap gap-2">
-          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: OIL }} /> CRUDE</span>
-          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: WATER }} /> WATER</span>
-          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: GAS }} /> GAS</span>
-        </div>
-      </div>
-
-      {selected && <DetailPanel id={selected as SelKey} />}
-    </div>
-  );
-}
 
 /* =================== Building blocks =================== */
 
