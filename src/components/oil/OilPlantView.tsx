@@ -2,9 +2,9 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { useOilSim } from "@/lib/sim/oilStore";
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X } from "lucide-react";
 
-// Portrait viewBox — top-to-bottom P&ID flow
-const VBW = 900;
-const VBH = 1680;
+// Landscape viewBox — left-to-right P&ID flow
+const VBW = 2000;
+const VBH = 900;
 
 const OIL = "#c87534";
 const WATER = "#0099ff";
