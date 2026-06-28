@@ -252,22 +252,27 @@ export function OilPlantView() {
           {/* Pump casing (volute) */}
           <circle cx="470" cy="830" r="55" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="2" />
           <circle cx="470" cy="830" r="42" fill="#0a0e1a" stroke="#3a4258" strokeWidth="1.5" />
-          {/* Impeller curved blades */}
-          <g className={s.pumpRunning ? "animate-spin-fast" : ""} style={{ transformOrigin: "470px 830px" }}>
-            {[0,1,2,3,4,5,6].map(i => {
-              const a = (i * Math.PI) / 3.5;
-              return (
-                <path
-                  key={i}
-                  d={`M 470 830 Q ${470 + 22*Math.cos(a)} ${830 + 22*Math.sin(a)} ${470 + 38*Math.cos(a+0.5)} ${830 + 38*Math.sin(a+0.5)}`}
-                  stroke="#0080ff"
-                  strokeWidth="4"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              );
-            })}
-            <circle cx="470" cy="830" r="6" fill="#0080ff" />
+          {/* Impeller — translated to pump center, rotation contained via SVG animateTransform */}
+          <g transform="translate(470 830)">
+            <g>
+              {s.pumpRunning && (
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.6s" repeatCount="indefinite" />
+              )}
+              {[0,1,2,3,4,5,6].map(i => {
+                const a = (i * Math.PI) / 3.5;
+                return (
+                  <path
+                    key={i}
+                    d={`M 0 0 Q ${22*Math.cos(a)} ${22*Math.sin(a)} ${38*Math.cos(a+0.5)} ${38*Math.sin(a+0.5)}`}
+                    stroke="#0080ff"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
+              <circle r="6" fill="#0080ff" />
+            </g>
           </g>
           {/* Discharge stub (up from casing) */}
           <rect x="462" y="765" width="16" height="20" fill="#3a4258" />
