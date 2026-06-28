@@ -386,6 +386,31 @@ export function OilPlantView() {
         </g>
       </svg>
 
+      {/* Zoom controls */}
+      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1">
+        <button onClick={() => setUserZoom((z) => Math.min(4, +(z + 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur"><ZoomIn className="h-4 w-4" /></button>
+        <button onClick={() => setUserZoom((z) => Math.max(0.3, +(z - 0.2).toFixed(2)))} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur"><ZoomOut className="h-4 w-4" /></button>
+        <button onClick={reset} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur" title="Fit to screen"><Maximize2 className="h-4 w-4" /></button>
+        <button onClick={reset} className="grid h-9 w-9 place-items-center rounded-md border border-border bg-card/90 hover:bg-muted backdrop-blur" title="Reset view"><RotateCcw className="h-4 w-4" /></button>
+        <div className="rounded-md border border-border bg-card/90 px-1 py-0.5 text-center font-mono text-[10px] text-muted-foreground backdrop-blur">{Math.round(scale * 100)}%</div>
+      </div>
+
+      <div className="pointer-events-none absolute left-2 top-2 rounded-md border border-border bg-card/80 p-2 font-mono text-[10px] backdrop-blur">
+        <div className="mb-1 text-muted-foreground">LINES</div>
+        <div className="flex flex-wrap gap-2">
+          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: OIL }} /> CRUDE</span>
+          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: WATER }} /> WATER</span>
+          <span><span className="inline-block h-2 w-3 align-middle" style={{ background: GAS }} /> GAS</span>
+        </div>
+      </div>
+
+      {selected && <DetailPanel id={selected as SelKey} />}
+    </div>
+  );
+}
+
+
+
 
 /* =================== Building blocks =================== */
 
