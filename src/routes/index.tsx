@@ -65,7 +65,7 @@ function Home() {
         <div className="grid gap-4 sm:grid-cols-3">
           <SectorCard to="/gas" title={t("gas_sector")} tag="GAS-01" icon={<Flame className="h-6 w-6" />} color="var(--primary)" description={t("gas_desc")} active activeLabel={t("active")} comingLabel={t("coming_soon")} />
           <SectorCard to="/oil" title={t("oil_sector")} tag="OIL-01" icon={<Droplet className="h-6 w-6" />} color="#0080ff" description={t("oil_desc")} active activeLabel={t("active")} comingLabel={t("coming_soon")} />
-          <SectorCard title={t("storage_sector")} tag="STO-03" icon={<Warehouse className="h-6 w-6" />} color="#00ff88" description={t("storage_desc")} activeLabel={t("active")} comingLabel={t("coming_soon")} />
+          <SectorCard to="/storage" title={t("storage_sector")} tag="STG-01" icon={<Warehouse className="h-6 w-6" />} color="#00aa44" description={t("storage_desc")} active activeLabel={t("active")} comingLabel={t("coming_soon")} />
         </div>
       </section>
 
