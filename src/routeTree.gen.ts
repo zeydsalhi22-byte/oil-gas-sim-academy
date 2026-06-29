@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StorageRouteImport } from './routes/storage'
 import { Route as OilRouteImport } from './routes/oil'
 import { Route as GasRouteImport } from './routes/gas'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StorageRoute = StorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OilRoute = OilRouteImport.update({
   id: '/oil',
   path: '/oil',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/gas': typeof GasRoute
   '/oil': typeof OilRoute
+  '/storage': typeof StorageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/gas': typeof GasRoute
   '/oil': typeof OilRoute
+  '/storage': typeof StorageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/gas': typeof GasRoute
   '/oil': typeof OilRoute
+  '/storage': typeof StorageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/gas' | '/oil'
+  fullPaths: '/' | '/gas' | '/oil' | '/storage'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/gas' | '/oil'
-  id: '__root__' | '/' | '/gas' | '/oil'
+  to: '/' | '/gas' | '/oil' | '/storage'
+  id: '__root__' | '/' | '/gas' | '/oil' | '/storage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GasRoute: typeof GasRoute
   OilRoute: typeof OilRoute
+  StorageRoute: typeof StorageRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/storage': {
+      id: '/storage'
+      path: '/storage'
+      fullPath: '/storage'
+      preLoaderRoute: typeof StorageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/oil': {
       id: '/oil'
       path: '/oil'
@@ -89,17 +106,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GasRoute: GasRoute,
   OilRoute: OilRoute,
+  StorageRoute: StorageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
