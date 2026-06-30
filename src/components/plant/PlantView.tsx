@@ -169,7 +169,7 @@ export function PlantView() {
           </g>
           {/* Sight glass */}
           <rect x="455" y="200" width="10" height="240" fill="#0a0e1a" stroke="#3a4258" />
-          <rect x="455" y={440 - (s.sepLevel / 100) * 240} width="10" height={(s.sepLevel / 100) * 240} fill="#ffa64d" opacity="0.9" />
+          <rect x="455" y={440 - (s.sepLevel / 100) * 240} width="10" height={(s.sepLevel / 100) * 240} fill="#ff8800" opacity="0.9" />
           {/* Nozzles */}
           <rect x="280" y="270" width="14" height="22" fill="#3a4258" />
           <rect x="476" y="250" width="14" height="22" fill="#3a4258" />

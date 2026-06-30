@@ -6,9 +6,9 @@ import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X } from "lucide-react";
 const VBW = 2000;
 const VBH = 900;
 
-const OIL = "#c87534";
+const OIL = "#ff8800";   // global standard: crude oil = orange
 const WATER = "#0099ff";
-const GAS = "#8a8f9f";
+const GAS = "#ffd11a";   // global standard: gas = yellow
 
 type SelKey =
   | "well" | "choke" | "sep" | "pump" | "hx" | "dehy" | "tank" | "wt" | "wtank"
