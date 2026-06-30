@@ -103,8 +103,8 @@ export function OilPlantView() {
             <stop offset="1" stopColor="#161c2e" />
           </linearGradient>
           <linearGradient id="oOil" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#d68a4a" />
-            <stop offset="1" stopColor="#6a3a14" />
+            <stop offset="0" stopColor="#ffa64d" />
+            <stop offset="1" stopColor="#cc5500" />
           </linearGradient>
           <linearGradient id="oWater" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0" stopColor="#33aaff" />
