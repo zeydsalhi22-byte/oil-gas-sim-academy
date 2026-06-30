@@ -99,7 +99,7 @@ export function PlantView() {
             <stop offset="1" stopColor="#1a2030" />
           </linearGradient>
           <linearGradient id="liquid" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#ffa64d" />
+            <stop offset="0" stopColor="#ff9933" />
             <stop offset="1" stopColor="#6a2e00" />
           </linearGradient>
           <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -114,16 +114,16 @@ export function PlantView() {
         <rect width="1100" height="620" fill="url(#grid)" />
 
         {/* Pipelines (thicker) */}
-        <Pipe d={pipes.p1} color={colorFor(wellLvl)} />
-        <Pipe d={pipes.p2} color={colorFor(wellLvl)} />
-        <Pipe d={pipes.p3} color={colorFor(dischLvl)} />
-        <Pipe d={pipes.p4} color={colorFor(sepLvlA)} />
+        <Pipe d={pipes.p1} color="#ffd11a" />
+        <Pipe d={pipes.p2} color="#ffd11a" />
+        <Pipe d={pipes.p3} color="#ffd11a" />
+        <Pipe d={pipes.p4} color="#ff8800" />
 
-        {/* Flow particles — visualise gas direction */}
-        <FlowParticles href="#mp1" color={colorFor(wellLvl)} count={4} dur={3} />
-        <FlowParticles href="#mp2" color={colorFor(wellLvl)} count={5} dur={2.6} />
-        <FlowParticles href="#mp3" color={colorFor(dischLvl)} count={5} dur={2.4} />
-        <FlowParticles href="#mp4" color="#ffa64d" count={3} dur={4} liquid />
+        {/* Flow particles — gas = yellow, oil/liquid = orange */}
+        <FlowParticles href="#mp1" color="#ffd11a" count={4} dur={3} />
+        <FlowParticles href="#mp2" color="#ffd11a" count={5} dur={2.6} />
+        <FlowParticles href="#mp3" color="#ffd11a" count={5} dur={2.4} />
+        <FlowParticles href="#mp4" color="#ff8800" count={3} dur={4} liquid />
 
         {/* ===== Well Head ===== */}
         <g onClick={() => select("well")} className="cursor-pointer">
@@ -190,34 +190,54 @@ export function PlantView() {
         {/* FV valve before compressor */}
         <Valve x={660} y={260} open={s.fvOpen} id="FV-101" onClick={() => select("fv")} />
 
-        {/* ===== Compressor K-101 (larger) ===== */}
+        {/* ===== Centrifugal Compressor K-101 (industry-standard barrel + motor) ===== */}
         <g onClick={() => select("comp")} className="cursor-pointer">
           {/* Base skid */}
-          <rect x="715" y="320" width="160" height="20" fill="#1a2030" stroke="#3a4258" />
-          {/* Motor */}
-          <rect x="715" y="220" width="60" height="100" rx="6" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
-          {[0,1,2,3,4].map(i => <line key={i} x1="722" y1={235+i*16} x2="768" y2={235+i*16} stroke="#1a2030" strokeWidth="1.5" />)}
-          {/* Compressor body */}
-          <rect x="775" y="210" width="100" height="110" rx="10" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
-          {/* Coupling */}
-          <rect x="770" y="255" width="10" height="20" fill="#ff6b00" />
-          {/* Impeller window */}
-          <circle cx="825" cy="265" r="34" fill="#0a0e1a" stroke="#3a4258" strokeWidth="2" />
-          <g className={s.compRunning ? "animate-spin-slow" : ""} style={{ transformOrigin: "825px 265px" }}>
-            <rect x="822" y="234" width="6" height="62" fill="#ff6b00" />
-            <rect x="794" y="262" width="62" height="6" fill="#ff6b00" />
-            <rect x="803" y="243" width="44" height="6" fill="#ff8a30" transform="rotate(45 825 265)" />
-            <rect x="803" y="281" width="44" height="6" fill="#ff8a30" transform="rotate(45 825 265)" />
+          <rect x="705" y="325" width="190" height="18" fill="#1a2030" stroke="#3a4258" />
+          {/* Drive motor (left) */}
+          <rect x="705" y="215" width="70" height="110" rx="6" fill="url(#metal)" stroke="#3a4258" strokeWidth="1.5" />
+          {[0,1,2,3,4,5].map(i => <line key={i} x1="712" y1={228+i*15} x2="768" y2={228+i*15} stroke="#1a2030" strokeWidth="1.5" />)}
+          {/* Motor terminal box */}
+          <rect x="728" y="200" width="24" height="16" fill="#3a4258" stroke="#1a2030" />
+          {/* Coupling/shaft */}
+          <rect x="775" y="266" width="14" height="8" fill="#ff6b00" stroke="#1a2030" />
+          {/* Compressor barrel casing (cylindrical, horizontal axis) */}
+          <ellipse cx="845" cy="270" rx="60" ry="55" fill="url(#metal)" stroke="#3a4258" strokeWidth="2" />
+          <ellipse cx="845" cy="270" rx="60" ry="55" fill="none" stroke="#1a2030" strokeWidth="1" strokeDasharray="2 3" />
+          {/* Impeller window (sight) */}
+          <circle cx="845" cy="270" r="36" fill="#0a0e1a" stroke="#3a4258" strokeWidth="2" />
+          {/* Impeller — rotation contained inside casing */}
+          <g transform="translate(845 270)">
+            <g>
+              {s.compRunning && (
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.5s" repeatCount="indefinite" />
+              )}
+              {[0,1,2,3,4,5,6,7].map(i => {
+                const a = (i * Math.PI) / 4;
+                return (
+                  <path
+                    key={i}
+                    d={`M 0 0 Q ${18*Math.cos(a)} ${18*Math.sin(a)} ${30*Math.cos(a+0.55)} ${30*Math.sin(a+0.55)}`}
+                    stroke="#ffd11a"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
+              <circle r="5" fill="#3a4258" stroke="#ffd11a" strokeWidth="1.5" />
+            </g>
           </g>
-          <circle cx="825" cy="265" r="6" fill="#3a4258" />
-          {/* Discharge stub */}
-          <rect x="870" y="252" width="14" height="22" fill="#3a4258" />
-          <text x="825" y="365" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">Compressor K-101</text>
-          <text x="825" y="385" textAnchor="middle" fill={colorFor(dischLvl)} fontSize="14" className="scada-value">{s.discharge.toFixed(1)} bar · {s.rpm.toFixed(0)} rpm</text>
+          {/* Suction nozzle (left top) */}
+          <rect x="800" y="216" width="14" height="20" fill="#3a4258" />
+          {/* Discharge nozzle (top, tangential — centrifugal style) */}
+          <rect x="868" y="208" width="16" height="28" fill="#3a4258" />
+          <text x="845" y="365" textAnchor="middle" fill="#9aa3b8" fontSize="14" className="scada-value">Compressor K-101</text>
+          <text x="845" y="385" textAnchor="middle" fill={colorFor(dischLvl)} fontSize="14" className="scada-value">{s.discharge.toFixed(1)} bar · {s.rpm.toFixed(0)} rpm</text>
         </g>
-        <SensorDot x={755} y={210} type="PT" id="PT-103-S" />
-        <SensorDot x={875} y={210} type="PT" id="PT-103" />
-        <SensorDot x={875} y={310} type="TT" id="TT-102" />
+        <SensorDot x={755} y={205} type="PT" id="PT-103-S" />
+        <SensorDot x={895} y={210} type="PT" id="PT-103" />
+        <SensorDot x={895} y={315} type="TT" id="TT-102" />
 
         {/* PV recycle valve */}
         <Valve x={600} y={350} open={s.pvOpen} id="PV-101" onClick={() => select("pv")} />
