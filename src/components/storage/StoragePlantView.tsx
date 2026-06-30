@@ -4,8 +4,8 @@ import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X, Smartphone } from "lucide-rea
 
 const VBW = 1800;
 const VBH = 1000;
-const BG = "#b8a882";
-const PIPE = "#333333";
+const BG = "#0a0e1a";
+const PIPE = "#5a6478";
 const OIL = "#8a4a1f";
 const GAS = "#2a3548";
 const STG = "#00aa44";
@@ -65,7 +65,7 @@ export function StoragePlantView() {
         style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}>
         <defs>
           <pattern id="dcsGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M40 0H0V40" fill="none" stroke="#9a8a6b" strokeWidth="0.6" />
+            <path d="M40 0H0V40" fill="none" stroke="#141a2a" strokeWidth="0.6" />
           </pattern>
           <linearGradient id="liquidOil" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0" stopColor="#6aa9ff" />
@@ -81,7 +81,7 @@ export function StoragePlantView() {
         <rect width={VBW} height={VBH} fill="url(#dcsGrid)" />
 
         {/* Header bar */}
-        <rect x="0" y="0" width={VBW} height="56" fill="#1a1f2e" />
+        <rect x="0" y="0" width={VBW} height="56" fill="#0f1626" />
         <text x="20" y="36" fill={STG} fontSize="22" className="scada-value" fontWeight="700">STOCKAGE ET EXPEDITION · STG-01</text>
         <text x={VBW - 20} y="36" fill="#9aa3b8" fontSize="16" className="scada-value" textAnchor="end">GAS &amp; OIL STORAGE TERMINAL</text>
 
@@ -124,12 +124,12 @@ export function StoragePlantView() {
         <Arrow x={1670} y={700} dir="right" />
 
         {/* === Inlet sources labels === */}
-        <text x="60" y="270" fill="#1a1f2e" fontSize="13" className="scada-value">FROM GAS</text>
-        <text x="60" y="380" fill="#1a1f2e" fontSize="13" className="scada-value">FROM OIL</text>
+        <text x="60" y="270" fill="#0f1626" fontSize="13" className="scada-value">FROM GAS</text>
+        <text x="60" y="380" fill="#0f1626" fontSize="13" className="scada-value">FROM OIL</text>
 
         {/* === MAN-301 inlet manifold === */}
         <g onClick={sel("MAN-301")} className="cursor-pointer">
-          <rect x="170" y="280" width="60" height="80" fill="#1a1f2e" stroke="#000" strokeWidth="1.5" />
+          <rect x="170" y="280" width="60" height="80" fill="#0f1626" stroke="#3a4258" strokeWidth="1.5" />
           <text x="200" y="310" textAnchor="middle" fill={STG} fontSize="12" className="scada-value">INLET</text>
           <text x="200" y="328" textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">MAN-301</text>
           <text x="200" y="350" textAnchor="middle" fill="#ffcc00" fontSize="11" className="scada-value">{s.inletFlow.toFixed(0)}</text>
@@ -148,10 +148,10 @@ export function StoragePlantView() {
         <ControlValve x={1030} y={870} label="LV-301" open={s.lv301} onClick={sel("LV-301")} />
         {/* LIC-301 controller bubble linked to LV-301 */}
         <g>
-          <line x1="1030" y1="820" x2="1030" y2="780" stroke="#000" strokeDasharray="4 3" />
-          <circle cx="1030" cy="760" r="22" fill="#fff" stroke="#000" strokeWidth="1.5" />
-          <text x="1030" y="757" textAnchor="middle" fill="#000" fontSize="11" className="scada-value" fontWeight="700">LIC</text>
-          <text x="1030" y="772" textAnchor="middle" fill="#000" fontSize="11" className="scada-value">301</text>
+          <line x1="1030" y1="820" x2="1030" y2="780" stroke="#5a6478" strokeDasharray="4 3" />
+          <circle cx="1030" cy="760" r="22" fill="#0f1626" stroke={STG} strokeWidth="1.5" />
+          <text x="1030" y="757" textAnchor="middle" fill={STG} fontSize="11" className="scada-value" fontWeight="700">LIC</text>
+          <text x="1030" y="772" textAnchor="middle" fill={STG} fontSize="11" className="scada-value">301</text>
         </g>
 
         {/* === Pumps P-301 / P-302 === */}
@@ -168,16 +168,16 @@ export function StoragePlantView() {
 
         {/* === Export labels === */}
         <g>
-          <rect x="1700" y="840" width="80" height="60" fill="#fff" stroke="#000" />
+          <rect x="1700" y="840" width="80" height="60" fill="#0f1626" stroke="#3a4258" />
           <text x="1740" y="862" textAnchor="middle" fill={OIL} fontSize="11" className="scada-value" fontWeight="700">CRUDE</text>
           <text x="1740" y="877" textAnchor="middle" fill={OIL} fontSize="10" className="scada-value">EXPORT →</text>
-          <text x="1740" y="892" textAnchor="middle" fill="#000" fontSize="11" className="scada-value">{s.exportCrude.toFixed(0)} m³/h</text>
+          <text x="1740" y="892" textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value">{s.exportCrude.toFixed(0)} m³/h</text>
         </g>
         <g>
-          <rect x="1700" y="670" width="80" height="60" fill="#fff" stroke="#000" />
+          <rect x="1700" y="670" width="80" height="60" fill="#0f1626" stroke="#3a4258" />
           <text x="1740" y="692" textAnchor="middle" fill="#0066cc" fontSize="11" className="scada-value" fontWeight="700">GAS</text>
           <text x="1740" y="707" textAnchor="middle" fill="#0066cc" fontSize="10" className="scada-value">EXPORT →</text>
-          <text x="1740" y="722" textAnchor="middle" fill="#000" fontSize="11" className="scada-value">{s.exportGas.toFixed(0)} m³/h</text>
+          <text x="1740" y="722" textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value">{s.exportGas.toFixed(0)} m³/h</text>
         </g>
 
         {/* === PV-301 gas pressure control valve (on sphere inlet header) === */}
@@ -196,7 +196,7 @@ export function StoragePlantView() {
 
         {/* === Status panel (bottom) === */}
         <g>
-          <rect x="20" y={VBH - 70} width={VBW - 40} height="50" fill="#1a1f2e" stroke="#000" />
+          <rect x="20" y={VBH - 70} width={VBW - 40} height="50" fill="#0f1626" stroke="#3a4258" />
           <StatusDot x={50} y={VBH - 45} ok={s.tk301Level <= 85} label={`TK-301 ${s.tk301Level.toFixed(0)}%`} />
           <StatusDot x={240} y={VBH - 45} ok={s.tk302Level <= 85} label={`TK-302 ${s.tk302Level.toFixed(0)}%`} />
           <StatusDot x={430} y={VBH - 45} ok={s.s301Press < 18} label={`S-301 ${s.s301Press.toFixed(1)}b`} />
@@ -209,10 +209,10 @@ export function StoragePlantView() {
 
         {/* === PID indicator box (bottom right) === */}
         <g>
-          <rect x={VBW - 360} y={VBH - 170} width="320" height="90" fill="#fff" stroke="#000" strokeWidth="1.5" />
-          <text x={VBW - 350} y={VBH - 150} fill="#000" fontSize="12" className="scada-value" fontWeight="700">LIC-301 {s.licAuto ? "AUTO" : "MAN"}</text>
-          <text x={VBW - 350} y={VBH - 132} fill="#000" fontSize="11" className="scada-value">SP: {s.licSP.toFixed(0)}%   PV: {s.tk301Level.toFixed(1)}%</text>
-          <text x={VBW - 350} y={VBH - 116} fill="#000" fontSize="11" className="scada-value">e: {(s.tk301Level - s.licSP).toFixed(2)}   OUT(LV-301): {s.lv301.toFixed(0)}%</text>
+          <rect x={VBW - 360} y={VBH - 170} width="320" height="90" fill="#0f1626" stroke="#3a4258" strokeWidth="1.5" />
+          <text x={VBW - 350} y={VBH - 150} fill={STG} fontSize="12" className="scada-value" fontWeight="700">LIC-301 {s.licAuto ? "AUTO" : "MAN"}</text>
+          <text x={VBW - 350} y={VBH - 132} fill="#e6ebf5" fontSize="11" className="scada-value">SP: {s.licSP.toFixed(0)}%   PV: {s.tk301Level.toFixed(1)}%</text>
+          <text x={VBW - 350} y={VBH - 116} fill="#e6ebf5" fontSize="11" className="scada-value">e: {(s.tk301Level - s.licSP).toFixed(2)}   OUT(LV-301): {s.lv301.toFixed(0)}%</text>
           <text x={VBW - 350} y={VBH - 100} fill="#666" fontSize="10" className="scada-value">Kp={s.kp.toFixed(2)} Ki={s.ki.toFixed(2)} Kd={s.kd.toFixed(2)}</text>
         </g>
       </svg>
@@ -245,9 +245,9 @@ function Arrow({ x, y, dir }: { x: number; y: number; dir: "right" | "down" }) {
 function SensorBadge({ x, y, tag, value, color, onClick }: { x: number; y: number; tag: string; value: string; color: string; onClick?: (e: React.MouseEvent) => void }) {
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <rect x={x - 38} y={y - 14} width="76" height="28" rx="3" fill="#fff" stroke={color} strokeWidth="1.5" />
+      <rect x={x - 38} y={y - 14} width="76" height="28" rx="3" fill="#0f1626" stroke={color} strokeWidth="1.5" />
       <text x={x} y={y - 2} textAnchor="middle" fill={color} fontSize="11" className="scada-value" fontWeight="700">{tag}</text>
-      <text x={x} y={y + 11} textAnchor="middle" fill="#000" fontSize="10" className="scada-value">{value}</text>
+      <text x={x} y={y + 11} textAnchor="middle" fill="#e6ebf5" fontSize="10" className="scada-value">{value}</text>
     </g>
   );
 }
@@ -265,10 +265,10 @@ function MOV({ x, y, label, open, onClick }: { x: number; y: number; label: stri
   const c = open > 50 ? "#00cc44" : "#ff3333";
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
-      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
+      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
+      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
       <rect x={x - 6} y={y - 24} width="12" height="12" fill="#333" />
-      <text x={x} y={y - 30} textAnchor="middle" fill="#1a1f2e" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
+      <text x={x} y={y - 30} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
     </g>
   );
 }
@@ -277,12 +277,12 @@ function ControlValve({ x, y, label, open, onClick }: { x: number; y: number; la
   const c = open > 50 ? "#00cc44" : open > 10 ? "#ffaa00" : "#ff3333";
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
-      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
+      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
+      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
       {/* diaphragm actuator */}
       <rect x={x - 2} y={y - 32} width="4" height="18" fill="#333" />
-      <ellipse cx={x} cy={y - 36} rx="14" ry="8" fill="#fff" stroke="#000" />
-      <text x={x} y={y + 30} textAnchor="middle" fill="#1a1f2e" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
+      <ellipse cx={x} cy={y - 36} rx="14" ry="8" fill="#fff" stroke="#3a4258" />
+      <text x={x} y={y + 30} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
       <text x={x} y={y + 44} textAnchor="middle" fill={c} fontSize="10" className="scada-value">{open.toFixed(0)}%</text>
     </g>
   );
@@ -292,11 +292,11 @@ function GateValve({ x, y, label, open, onClick }: { x: number; y: number; label
   const c = open > 50 ? "#00cc44" : "#ff3333";
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
-      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#000" strokeWidth="1.2" />
+      <polygon points={`${x - 14},${y - 12} ${x},${y} ${x - 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
+      <polygon points={`${x + 14},${y - 12} ${x},${y} ${x + 14},${y + 12}`} fill={c} stroke="#3a4258" strokeWidth="1.2" />
       <line x1={x} y1={y - 24} x2={x} y2={y - 12} stroke="#333" strokeWidth="2" />
       <line x1={x - 8} y1={y - 26} x2={x + 8} y2={y - 26} stroke="#0066cc" strokeWidth="2" />
-      <text x={x} y={y + 28} textAnchor="middle" fill="#1a1f2e" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
+      <text x={x} y={y + 28} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value" fontWeight="700">{label}</text>
     </g>
   );
 }
@@ -309,9 +309,9 @@ function Tank({ x, y, tag, level, temp, capacity, onClick }: { x: number; y: num
   return (
     <g onClick={onClick} className="cursor-pointer">
       {/* top ellipse roof */}
-      <ellipse cx={x + W / 2} cy={y} rx={W / 2} ry="14" fill="#d6c89e" stroke="#000" strokeWidth="1.5" />
+      <ellipse cx={x + W / 2} cy={y} rx={W / 2} ry="14" fill="#2a3548" stroke="#3a4258" strokeWidth="1.5" />
       {/* shell */}
-      <rect x={x} y={y} width={W} height={H} fill="#e8dcb5" stroke="#000" strokeWidth="1.5" />
+      <rect x={x} y={y} width={W} height={H} fill="#1a2030" stroke="#3a4258" strokeWidth="1.5" />
       {/* liquid */}
       <clipPath id={`tk-clip-${tag}`}><rect x={x + 1} y={y + 1} width={W - 2} height={H - 2} /></clipPath>
       <g clipPath={`url(#tk-clip-${tag})`}>
@@ -319,20 +319,20 @@ function Tank({ x, y, tag, level, temp, capacity, onClick }: { x: number; y: num
         <line x1={x} y1={lvlY} x2={x + W} y2={lvlY} stroke="#fff" strokeWidth="2" opacity="0.7" />
       </g>
       {/* level scale on left */}
-      <rect x={x - 12} y={y} width="8" height={H} fill="#fff" stroke="#000" />
+      <rect x={x - 12} y={y} width="8" height={H} fill="#0f1626" stroke="#3a4258" />
       <rect x={x - 12} y={lvlY} width="8" height={y + H - lvlY} fill={danger ? "#ff3333" : "#0099ff"} />
       {/* support legs */}
-      <line x1={x + 20} y1={y + H} x2={x + 20} y2={y + H + 20} stroke="#000" strokeWidth="3" />
-      <line x1={x + W - 20} y1={y + H} x2={x + W - 20} y2={y + H + 20} stroke="#000" strokeWidth="3" />
-      <line x1={x + W / 2} y1={y + H} x2={x + W / 2} y2={y + H + 20} stroke="#000" strokeWidth="3" />
+      <line x1={x + 20} y1={y + H} x2={x + 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
+      <line x1={x + W - 20} y1={y + H} x2={x + W - 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
+      <line x1={x + W / 2} y1={y + H} x2={x + W / 2} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
       {/* TI on roof */}
-      <rect x={x + W / 2 - 28} y={y - 38} width="56" height="20" fill="#ff8a00" stroke="#000" />
+      <rect x={x + W / 2 - 28} y={y - 38} width="56" height="20" fill="#ff8a00" stroke="#3a4258" />
       <text x={x + W / 2} y={y - 24} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">TI {temp.toFixed(0)}°C</text>
       {/* Volume top right */}
-      <rect x={x + W - 4} y={y + 6} width="78" height="20" fill="#0066cc" stroke="#000" />
+      <rect x={x + W - 4} y={y + 6} width="78" height="20" fill="#0066cc" stroke="#3a4258" />
       <text x={x + W + 35} y={y + 20} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{vol.toFixed(0)} m³</text>
       {/* LI bottom */}
-      <rect x={x + W / 2 - 38} y={y + H + 24} width="76" height="22" fill={danger ? "#cc0000" : "#0a7a2a"} stroke="#000" />
+      <rect x={x + W / 2 - 38} y={y + H + 24} width="76" height="22" fill={danger ? "#cc0000" : "#0a7a2a"} stroke="#3a4258" />
       <text x={x + W / 2} y={y + H + 39} textAnchor="middle" fill="#fff" fontSize="12" className="scada-value" fontWeight="700">{tag} {level.toFixed(0)}%</text>
     </g>
   );
@@ -348,30 +348,30 @@ function Sphere({ x, y, tag, press, level, capacity, psv, onClick, onPsv }: { x:
     <g>
       <g onClick={onClick} className="cursor-pointer">
         <clipPath id={`sph-${tag}`}><circle cx={x} cy={y} r={r} /></clipPath>
-        <circle cx={x} cy={y} r={r} fill="#e8dcb5" stroke="#000" strokeWidth="2" />
+        <circle cx={x} cy={y} r={r} fill="#1a2030" stroke="#3a4258" strokeWidth="2" />
         <g clipPath={`url(#sph-${tag})`}>
           <rect x={x - r} y={fillY} width={r * 2} height={r * 2} fill="url(#gasFill)" opacity="0.9" />
         </g>
         {/* highlight */}
         <ellipse cx={x - 28} cy={y - 30} rx="22" ry="12" fill="#fff" opacity="0.15" />
         {/* support legs */}
-        <line x1={x - r * 0.7} y1={y + r * 0.7} x2={x - r * 0.7} y2={y + r + 30} stroke="#000" strokeWidth="3" />
-        <line x1={x + r * 0.7} y1={y + r * 0.7} x2={x + r * 0.7} y2={y + r + 30} stroke="#000" strokeWidth="3" />
-        <line x1={x} y1={y + r} x2={x} y2={y + r + 30} stroke="#000" strokeWidth="3" />
+        <line x1={x - r * 0.7} y1={y + r * 0.7} x2={x - r * 0.7} y2={y + r + 30} stroke="#3a4258" strokeWidth="3" />
+        <line x1={x + r * 0.7} y1={y + r * 0.7} x2={x + r * 0.7} y2={y + r + 30} stroke="#3a4258" strokeWidth="3" />
+        <line x1={x} y1={y + r} x2={x} y2={y + r + 30} stroke="#3a4258" strokeWidth="3" />
         {/* label center */}
         <text x={x} y={y + 5} textAnchor="middle" fill="#fff" fontSize="14" className="scada-value" fontWeight="700">{tag}</text>
         {/* Press box */}
-        <rect x={x - 50} y={y - r - 56} width="100" height="20" fill={pressDanger ? "#cc0000" : "#0a7a2a"} stroke="#000" />
+        <rect x={x - 50} y={y - r - 56} width="100" height="20" fill={pressDanger ? "#cc0000" : "#0a7a2a"} stroke="#3a4258" />
         <text x={x} y={y - r - 42} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{press.toFixed(1)} bar</text>
         {/* Level box */}
-        <rect x={x - 50} y={y + r + 40} width="100" height="20" fill={lvlDanger ? "#cc0000" : "#0a7a2a"} stroke="#000" />
+        <rect x={x - 50} y={y + r + 40} width="100" height="20" fill={lvlDanger ? "#cc0000" : "#0a7a2a"} stroke="#3a4258" />
         <text x={x} y={y + r + 54} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{level.toFixed(0)}% · {vol.toFixed(0)} m³</text>
       </g>
       {/* PSV on top */}
       <g onClick={onPsv} className={`cursor-pointer ${psv ? "animate-alarm" : ""}`}>
         <line x1={x} y1={y - r} x2={x} y2={y - r - 24} stroke="#333" strokeWidth="3" />
-        <rect x={x - 10} y={y - r - 34} width="20" height="14" fill={psv ? "#ff3333" : "#666"} stroke="#000" />
-        <text x={x + 14} y={y - r - 22} fill="#1a1f2e" fontSize="9" className="scada-value">PSV-30{tag === "S-301" ? "1" : "2"}</text>
+        <rect x={x - 10} y={y - r - 34} width="20" height="14" fill={psv ? "#ff3333" : "#666"} stroke="#3a4258" />
+        <text x={x + 14} y={y - r - 22} fill="#0f1626" fontSize="9" className="scada-value">PSV-30{tag === "S-301" ? "1" : "2"}</text>
       </g>
     </g>
   );
@@ -380,7 +380,7 @@ function Sphere({ x, y, tag, press, level, capacity, psv, onClick, onPsv }: { x:
 function Pump({ x, y, tag, running, subtitle, onClick }: { x: number; y: number; tag: string; running: boolean; subtitle: string; onClick?: (e: React.MouseEvent) => void }) {
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <circle cx={x} cy={y} r="32" fill="#e8dcb5" stroke="#000" strokeWidth="2" />
+      <circle cx={x} cy={y} r="32" fill="#1a2030" stroke="#3a4258" strokeWidth="2" />
       {/* impeller lines */}
       <g transform={`translate(${x} ${y})`}>
         <g className={running ? "animate-spin-slow" : ""} style={{ transformOrigin: "center" }}>
@@ -390,10 +390,10 @@ function Pump({ x, y, tag, running, subtitle, onClick }: { x: number; y: number;
           })}
         </g>
       </g>
-      <circle cx={x} cy={y} r="6" fill={running ? "#00cc44" : "#ff3333"} stroke="#000" />
-      <text x={x} y={y + 50} textAnchor="middle" fill="#1a1f2e" fontSize="12" className="scada-value" fontWeight="700">{tag}</text>
-      <text x={x} y={y + 64} textAnchor="middle" fill="#1a1f2e" fontSize="10" className="scada-value">{subtitle}</text>
-      <rect x={x - 30} y={y + 70} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#000" />
+      <circle cx={x} cy={y} r="6" fill={running ? "#00cc44" : "#ff3333"} stroke="#3a4258" />
+      <text x={x} y={y + 50} textAnchor="middle" fill="#0f1626" fontSize="12" className="scada-value" fontWeight="700">{tag}</text>
+      <text x={x} y={y + 64} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value">{subtitle}</text>
+      <rect x={x - 30} y={y + 70} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
       <text x={x} y={y + 83} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
     </g>
   );
@@ -402,11 +402,11 @@ function Pump({ x, y, tag, running, subtitle, onClick }: { x: number; y: number;
 function Meter({ x, y, tag, flow, onClick }: { x: number; y: number; tag: string; flow: number; onClick?: (e: React.MouseEvent) => void }) {
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <rect x={x - 40} y={y - 24} width="80" height="48" fill="#1a1f2e" stroke="#000" strokeWidth="1.5" />
+      <rect x={x - 40} y={y - 24} width="80" height="48" fill="#0f1626" stroke="#3a4258" strokeWidth="1.5" />
       <text x={x} y={y - 10} textAnchor="middle" fill={STG} fontSize="11" className="scada-value">{tag}</text>
       <rect x={x - 34} y={y - 4} width="68" height="22" fill="#000" />
       <text x={x} y={y + 12} textAnchor="middle" fill="#00ff66" fontSize="12" className="scada-value">{flow.toFixed(0)}</text>
-      <text x={x} y={y + 36} textAnchor="middle" fill="#1a1f2e" fontSize="9" className="scada-value">m³/h</text>
+      <text x={x} y={y + 36} textAnchor="middle" fill="#0f1626" fontSize="9" className="scada-value">m³/h</text>
     </g>
   );
 }
