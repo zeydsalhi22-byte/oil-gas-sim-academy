@@ -239,33 +239,41 @@ export function OilPlantView() {
           <rect x="855" y="360" width="75" height="118" rx="6" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="1.5" />
           {[0,1,2,3,4,5].map(i => <line key={i} x1="862" y1={370+i*18} x2="923" y2={370+i*18} stroke="#1a2030" strokeWidth="1.5" />)}
           <rect x="925" y="395" width="15" height="14" fill="#3a4258" />
-          {/* Pump casing (volute) */}
-          <circle cx="980" cy="400" r="55" fill="url(#oMetal)" stroke="#3a4258" strokeWidth="2" />
+          {/* Pump volute casing — spiral teardrop with top discharge */}
+          <path
+            d="M 980 345 Q 1040 345 1040 400 Q 1040 458 980 458 Q 920 458 920 400 Q 920 350 975 348 L 992 348 L 992 318 L 1014 318 L 1014 348 Z"
+            fill="url(#oMetal)" stroke="#3a4258" strokeWidth="2"
+          />
+          {/* Inner casing chamber */}
           <circle cx="980" cy="400" r="42" fill="#0a0e1a" stroke="#3a4258" strokeWidth="1.5" />
           {/* Impeller — rotation contained inside casing */}
           <g transform="translate(980 400)">
             <g>
               {s.pumpRunning && (
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.6s" repeatCount="indefinite" />
+                <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="0.6s" repeatCount="indefinite" />
               )}
               {[0,1,2,3,4,5,6].map(i => {
                 const a = (i * Math.PI) / 3.5;
                 return (
                   <path
                     key={i}
-                    d={`M 0 0 Q ${22*Math.cos(a)} ${22*Math.sin(a)} ${38*Math.cos(a+0.5)} ${38*Math.sin(a+0.5)}`}
-                    stroke="#0080ff"
+                    d={`M 0 0 Q ${20*Math.cos(a)} ${20*Math.sin(a)} ${34*Math.cos(a+0.5)} ${34*Math.sin(a+0.5)}`}
+                    stroke={OIL}
                     strokeWidth="4"
                     fill="none"
                     strokeLinecap="round"
                   />
                 );
               })}
-              <circle r="6" fill="#0080ff" />
+              <circle r="6" fill="#3a4258" stroke={OIL} strokeWidth="1.5" />
             </g>
           </g>
-          {/* Discharge stub (right side) */}
-          <rect x="1025" y="392" width="20" height="16" fill="#3a4258" />
+          {/* Suction nozzle (left, axial) */}
+          <rect x="935" y="392" width="14" height="16" fill="#3a4258" />
+          {/* Discharge flange (top, tangential) */}
+          <rect x="988" y="305" width="22" height="14" fill="#3a4258" stroke="#1a2030" />
+          {/* Discharge piping right turn */}
+          <path d="M 999 318 L 999 290 L 1080 290 L 1080 395" stroke="#3a4258" strokeWidth="10" fill="none" strokeLinecap="round" />
 
           {/* Label box (below pump) */}
           <rect x="900" y="510" width="160" height="80" fill="#0a0e1a" stroke="#3a4258" rx="3" />
