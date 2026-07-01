@@ -385,23 +385,59 @@ function Sphere({ x, y, tag, press, level, capacity, psv, onClick, onPsv }: { x:
 }
 
 function Pump({ x, y, tag, running, subtitle, onClick }: { x: number; y: number; tag: string; running: boolean; subtitle: string; onClick?: (e: React.MouseEvent) => void }) {
+  const border = running ? "#00cc44" : "#ff3333";
+  const R = 28;
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <circle cx={x} cy={y} r="32" fill="#1a2030" stroke="#3a4258" strokeWidth="2" />
-      {/* impeller lines */}
+      {/* suction / discharge stubs */}
+      <line x1={x - R - 12} y1={y} x2={x - R} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      <line x1={x + R} y1={y} x2={x + R + 12} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      {/* Motor "M" */}
+      <line x1={x} y1={y - R} x2={x} y2={y - R - 12} stroke="#5a6478" strokeWidth="2" />
+      <circle cx={x} cy={y - R - 22} r="10" fill="#0f1626" stroke="#5a6478" strokeWidth="1.5" />
+      <text x={x} y={y - R - 18} textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value" fontWeight="700">M</text>
+      {/* Pump body: circle + triangle pointing right (standard centrifugal P&ID symbol) */}
+      <circle cx={x} cy={y} r={R} fill="#0f1626" stroke={border} strokeWidth="2.5" />
+      <polygon
+        points={`${x - R * 0.65},${y - R * 0.7} ${x - R * 0.65},${y + R * 0.7} ${x + R * 0.75},${y}`}
+        fill={running ? "#0a7a2a" : "#3a1a1a"}
+        stroke={border}
+        strokeWidth="1.5"
+      />
+      {/* Tag */}
+      <text x={x} y={y + R + 20} textAnchor="middle" fill="#e6ebf5" fontSize="13" className="scada-value" fontWeight="700">{tag}</text>
+      <text x={x} y={y + R + 34} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{subtitle}</text>
+      <rect x={x - 30} y={y + R + 42} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
+      <text x={x} y={y + R + 55} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
+    </g>
+  );
+}
+
+function Compressor({ x, y, tag, running, subtitle, press, onClick }: { x: number; y: number; tag: string; running: boolean; subtitle: string; press?: number; onClick?: (e: React.MouseEvent) => void }) {
+  const border = running ? "#00cc44" : "#ff3333";
+  const R = 30;
+  return (
+    <g onClick={onClick} className="cursor-pointer">
+      <line x1={x - R - 12} y1={y} x2={x - R} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      <line x1={x + R} y1={y} x2={x + R + 12} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      {/* Motor */}
+      <line x1={x} y1={y - R} x2={x} y2={y - R - 12} stroke="#5a6478" strokeWidth="2" />
+      <circle cx={x} cy={y - R - 22} r="10" fill="#0f1626" stroke="#5a6478" strokeWidth="1.5" />
+      <text x={x} y={y - R - 18} textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value" fontWeight="700">M</text>
+      {/* Casing */}
+      <circle cx={x} cy={y} r={R} fill="#0f1626" stroke={border} strokeWidth="2.5" />
+      {/* Back-to-back triangles inside — standard compressor symbol */}
       <g transform={`translate(${x} ${y})`}>
-        <g className={running ? "animate-spin-slow" : ""} style={{ transformOrigin: "center" }}>
-          {[0, 1, 2, 3, 4, 5].map((i) => {
-            const a = (i * Math.PI) / 3;
-            return <line key={i} x1={0} y1={0} x2={28 * Math.cos(a)} y2={28 * Math.sin(a)} stroke="#333" strokeWidth="2.5" />;
-          })}
+        <g className={running ? "animate-spin-slow" : ""} style={{ transformOrigin: "0px 0px" }}>
+          <polygon points={`${-R * 0.75},${-R * 0.55} 0,0 ${-R * 0.75},${R * 0.55}`} fill={running ? "#0a7a2a" : "#3a1a1a"} stroke={border} strokeWidth="1.2" />
+          <polygon points={`${R * 0.75},${-R * 0.55} 0,0 ${R * 0.75},${R * 0.55}`} fill={running ? "#0a7a2a" : "#3a1a1a"} stroke={border} strokeWidth="1.2" />
         </g>
       </g>
-      <circle cx={x} cy={y} r="6" fill={running ? "#00cc44" : "#ff3333"} stroke="#3a4258" />
-      <text x={x} y={y + 50} textAnchor="middle" fill="#0f1626" fontSize="12" className="scada-value" fontWeight="700">{tag}</text>
-      <text x={x} y={y + 64} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value">{subtitle}</text>
-      <rect x={x - 30} y={y + 70} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
-      <text x={x} y={y + 83} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
+      <text x={x} y={y + R + 20} textAnchor="middle" fill="#e6ebf5" fontSize="13" className="scada-value" fontWeight="700">{tag}</text>
+      <text x={x} y={y + R + 34} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{subtitle}</text>
+      {press !== undefined && <text x={x} y={y + R + 48} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{press.toFixed(1)} bar · {running ? "2950" : "0"} rpm</text>}
+      <rect x={x - 30} y={y + R + 56} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
+      <text x={x} y={y + R + 69} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
     </g>
   );
 }
