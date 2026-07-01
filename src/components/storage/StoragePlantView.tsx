@@ -160,7 +160,7 @@ export function StoragePlantView() {
 
         {/* === Pumps P-301 / P-302 === */}
         <Pump x={1220} y={870} tag="P-301" running={s.p301} subtitle="CRUDE" onClick={sel("P-301")} />
-        <Pump x={1220} y={700} tag="P-302" running={s.p302} subtitle="GAS" onClick={sel("P-302")} />
+        <Compressor x={1220} y={700} tag="K-301" running={s.p302} subtitle="GAS" press={s.s301Press} onClick={sel("P-302")} />
 
         {/* === Metering stations === */}
         <Meter x={1360} y={870} tag="MS-301" flow={s.exportCrude} onClick={sel("MS-301")} />
