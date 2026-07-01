@@ -327,7 +327,7 @@ function Tank({ x, y, tag, level, temp, capacity, onClick }: { x: number; y: num
       </g>
       {/* level scale on left */}
       <rect x={x - 12} y={y} width="8" height={H} fill="#0f1626" stroke="#3a4258" />
-      <rect x={x - 12} y={lvlY} width="8" height={y + H - lvlY} fill={danger ? "#ff3333" : "#0099ff"} />
+      <rect x={x - 12} y={lvlY} width="8" height={y + H - lvlY} fill={danger ? "#ff3333" : "#ff8a00"} />
       {/* support legs */}
       <line x1={x + 20} y1={y + H} x2={x + 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
       <line x1={x + W - 20} y1={y + H} x2={x + W - 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
