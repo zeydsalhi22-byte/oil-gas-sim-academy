@@ -6,9 +6,12 @@ const VBW = 1800;
 const VBH = 1000;
 const BG = "#0a0e1a";
 const PIPE = "#5a6478";
-const OIL = "#8a4a1f";
-const GAS = "#2a3548";
+const OIL = "#8B4513";
+const GAS = "#666666";
+const WATER = "#1565C0";
 const STG = "#00aa44";
+type PipeKind = "crude" | "gas" | "water";
+const pipeColor = (k?: PipeKind) => (k === "crude" ? OIL : k === "gas" ? GAS : k === "water" ? WATER : PIPE);
 
 export function StoragePlantView() {
   const s = useStorageSim();
@@ -29,10 +32,11 @@ export function StoragePlantView() {
     return () => ro.disconnect();
   }, []);
 
-  const fit = box.w && box.h ? Math.min(box.w / VBW, box.h / VBH) : 1;
+  const ready = box.w > 0 && box.h > 0;
+  const fit = ready ? Math.min(box.w / VBW, box.h / VBH) : 1;
   const scale = fit * userZoom;
-  const tx = (box.w - VBW * scale) / 2 + pan.x;
-  const ty = (box.h - VBH * scale) / 2 + pan.y;
+  const tx = ready ? (box.w - VBW * scale) / 2 + pan.x : 0;
+  const ty = ready ? (box.h - VBH * scale) / 2 + pan.y : 0;
 
   const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
   const onDown = (e: React.PointerEvent) => {
@@ -86,30 +90,30 @@ export function StoragePlantView() {
         <text x={VBW - 20} y="36" fill="#9aa3b8" fontSize="16" className="scada-value" textAnchor="end">GAS &amp; OIL STORAGE TERMINAL</text>
 
         {/* === PIPES === */}
-        {/* inlet manifold to tanks */}
-        <Pipe d="M 230 320 L 380 320 L 380 440" />
-        <Pipe d="M 230 320 L 720 320 L 720 440" />
         {/* manifold inlet stubs from left */}
-        <Pipe d="M 60 280 L 170 280 L 170 310" dashed />
-        <Pipe d="M 60 360 L 170 360 L 170 330" dashed />
+        <Pipe d="M 60 280 L 170 280 L 170 310" kind="gas" thin />
+        <Pipe d="M 60 360 L 170 360 L 170 330" kind="crude" thin />
+        {/* inlet manifold to crude tanks */}
+        <Pipe d="M 230 320 L 380 320 L 380 440" kind="crude" />
+        <Pipe d="M 380 320 L 720 320 L 720 440" kind="crude" />
         {/* tanks outlet to LV-301 */}
-        <Pipe d="M 380 800 L 380 870 L 1000 870" />
-        <Pipe d="M 720 800 L 720 870" />
+        <Pipe d="M 380 800 L 380 870 L 1000 870" kind="crude" />
+        <Pipe d="M 720 800 L 720 870" kind="crude" />
         {/* LV-301 to pump P-301 */}
-        <Pipe d="M 1060 870 L 1180 870" />
+        <Pipe d="M 1060 870 L 1180 870" kind="crude" />
         {/* P-301 to MS-301 to XV-301 to export */}
-        <Pipe d="M 1260 870 L 1360 870" />
-        <Pipe d="M 1440 870 L 1540 870" />
-        <Pipe d="M 1590 870 L 1740 870" />
+        <Pipe d="M 1260 870 L 1360 870" kind="crude" />
+        <Pipe d="M 1440 870 L 1540 870" kind="crude" />
+        <Pipe d="M 1590 870 L 1740 870" kind="crude" />
         {/* inlet manifold gas branch to spheres */}
-        <Pipe d="M 230 320 L 1000 320 L 1000 460" />
-        <Pipe d="M 1000 320 L 1320 320 L 1320 460" />
+        <Pipe d="M 230 320 L 1000 320 L 1000 460" kind="gas" />
+        <Pipe d="M 1000 320 L 1320 320 L 1320 460" kind="gas" />
         {/* spheres to PV-301 / gas pump */}
-        <Pipe d="M 1000 620 L 1000 700 L 1180 700" />
-        <Pipe d="M 1320 620 L 1320 700 L 1180 700" />
-        <Pipe d="M 1260 700 L 1360 700" />
-        <Pipe d="M 1440 700 L 1540 700" />
-        <Pipe d="M 1590 700 L 1740 700" />
+        <Pipe d="M 1000 620 L 1000 700 L 1180 700" kind="gas" />
+        <Pipe d="M 1320 620 L 1320 700 L 1180 700" kind="gas" />
+        <Pipe d="M 1260 700 L 1360 700" kind="gas" />
+        <Pipe d="M 1440 700 L 1540 700" kind="gas" />
+        <Pipe d="M 1590 700 L 1740 700" kind="gas" />
 
         {/* Direction arrows */}
         <Arrow x={300} y={320} dir="right" />
@@ -124,8 +128,8 @@ export function StoragePlantView() {
         <Arrow x={1670} y={700} dir="right" />
 
         {/* === Inlet sources labels === */}
-        <text x="60" y="270" fill="#0f1626" fontSize="13" className="scada-value">FROM GAS</text>
-        <text x="60" y="380" fill="#0f1626" fontSize="13" className="scada-value">FROM OIL</text>
+        <text x="60" y="270" fill="#9aa3b8" fontSize="13" className="scada-value">FROM GAS</text>
+        <text x="60" y="380" fill="#9aa3b8" fontSize="13" className="scada-value">FROM OIL</text>
 
         {/* === MAN-301 inlet manifold === */}
         <g onClick={sel("MAN-301")} className="cursor-pointer">
@@ -156,7 +160,7 @@ export function StoragePlantView() {
 
         {/* === Pumps P-301 / P-302 === */}
         <Pump x={1220} y={870} tag="P-301" running={s.p301} subtitle="CRUDE" onClick={sel("P-301")} />
-        <Pump x={1220} y={700} tag="P-302" running={s.p302} subtitle="GAS" onClick={sel("P-302")} />
+        <Compressor x={1220} y={700} tag="K-301" running={s.p302} subtitle="GAS" press={s.s301Press} onClick={sel("P-302")} />
 
         {/* === Metering stations === */}
         <Meter x={1360} y={870} tag="MS-301" flow={s.exportCrude} onClick={sel("MS-301")} />
@@ -233,13 +237,16 @@ export function StoragePlantView() {
 
 /* ============== Primitives ============== */
 
-function Pipe({ d, dashed }: { d: string; dashed?: boolean }) {
-  return <path d={d} fill="none" stroke={PIPE} strokeWidth="3" strokeDasharray={dashed ? "8 6" : undefined} strokeLinecap="round" strokeLinejoin="round" />;
+function Pipe({ d, kind, thin }: { d: string; kind?: PipeKind; thin?: boolean }) {
+  const color = pipeColor(kind);
+  const dashed = kind === "crude" || kind === "gas";
+  const width = thin ? 1.5 : 2.5;
+  return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeDasharray={dashed ? "10 6" : undefined} strokeLinecap="round" strokeLinejoin="round" />;
 }
 
 function Arrow({ x, y, dir }: { x: number; y: number; dir: "right" | "down" }) {
   const pts = dir === "right" ? `${x - 6},${y - 5} ${x + 4},${y} ${x - 6},${y + 5}` : `${x - 5},${y - 6} ${x},${y + 4} ${x + 5},${y - 6}`;
-  return <polygon points={pts} fill={PIPE} />;
+  return <polygon points={pts} fill="#8a94a8" />;
 }
 
 function SensorBadge({ x, y, tag, value, color, onClick }: { x: number; y: number; tag: string; value: string; color: string; onClick?: (e: React.MouseEvent) => void }) {
@@ -378,23 +385,59 @@ function Sphere({ x, y, tag, press, level, capacity, psv, onClick, onPsv }: { x:
 }
 
 function Pump({ x, y, tag, running, subtitle, onClick }: { x: number; y: number; tag: string; running: boolean; subtitle: string; onClick?: (e: React.MouseEvent) => void }) {
+  const border = running ? "#00cc44" : "#ff3333";
+  const R = 28;
   return (
     <g onClick={onClick} className="cursor-pointer">
-      <circle cx={x} cy={y} r="32" fill="#1a2030" stroke="#3a4258" strokeWidth="2" />
-      {/* impeller lines */}
+      {/* suction / discharge stubs */}
+      <line x1={x - R - 12} y1={y} x2={x - R} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      <line x1={x + R} y1={y} x2={x + R + 12} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      {/* Motor "M" */}
+      <line x1={x} y1={y - R} x2={x} y2={y - R - 12} stroke="#5a6478" strokeWidth="2" />
+      <circle cx={x} cy={y - R - 22} r="10" fill="#0f1626" stroke="#5a6478" strokeWidth="1.5" />
+      <text x={x} y={y - R - 18} textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value" fontWeight="700">M</text>
+      {/* Pump body: circle + triangle pointing right (standard centrifugal P&ID symbol) */}
+      <circle cx={x} cy={y} r={R} fill="#0f1626" stroke={border} strokeWidth="2.5" />
+      <polygon
+        points={`${x - R * 0.65},${y - R * 0.7} ${x - R * 0.65},${y + R * 0.7} ${x + R * 0.75},${y}`}
+        fill={running ? "#0a7a2a" : "#3a1a1a"}
+        stroke={border}
+        strokeWidth="1.5"
+      />
+      {/* Tag */}
+      <text x={x} y={y + R + 20} textAnchor="middle" fill="#e6ebf5" fontSize="13" className="scada-value" fontWeight="700">{tag}</text>
+      <text x={x} y={y + R + 34} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{subtitle}</text>
+      <rect x={x - 30} y={y + R + 42} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
+      <text x={x} y={y + R + 55} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
+    </g>
+  );
+}
+
+function Compressor({ x, y, tag, running, subtitle, press, onClick }: { x: number; y: number; tag: string; running: boolean; subtitle: string; press?: number; onClick?: (e: React.MouseEvent) => void }) {
+  const border = running ? "#00cc44" : "#ff3333";
+  const R = 30;
+  return (
+    <g onClick={onClick} className="cursor-pointer">
+      <line x1={x - R - 12} y1={y} x2={x - R} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      <line x1={x + R} y1={y} x2={x + R + 12} y2={y} stroke={PIPE} strokeWidth="2.5" />
+      {/* Motor */}
+      <line x1={x} y1={y - R} x2={x} y2={y - R - 12} stroke="#5a6478" strokeWidth="2" />
+      <circle cx={x} cy={y - R - 22} r="10" fill="#0f1626" stroke="#5a6478" strokeWidth="1.5" />
+      <text x={x} y={y - R - 18} textAnchor="middle" fill="#e6ebf5" fontSize="11" className="scada-value" fontWeight="700">M</text>
+      {/* Casing */}
+      <circle cx={x} cy={y} r={R} fill="#0f1626" stroke={border} strokeWidth="2.5" />
+      {/* Back-to-back triangles inside — standard compressor symbol */}
       <g transform={`translate(${x} ${y})`}>
-        <g className={running ? "animate-spin-slow" : ""} style={{ transformOrigin: "center" }}>
-          {[0, 1, 2, 3, 4, 5].map((i) => {
-            const a = (i * Math.PI) / 3;
-            return <line key={i} x1={0} y1={0} x2={28 * Math.cos(a)} y2={28 * Math.sin(a)} stroke="#333" strokeWidth="2.5" />;
-          })}
+        <g className={running ? "animate-spin-slow" : ""} style={{ transformOrigin: "0px 0px" }}>
+          <polygon points={`${-R * 0.75},${-R * 0.55} 0,0 ${-R * 0.75},${R * 0.55}`} fill={running ? "#0a7a2a" : "#3a1a1a"} stroke={border} strokeWidth="1.2" />
+          <polygon points={`${R * 0.75},${-R * 0.55} 0,0 ${R * 0.75},${R * 0.55}`} fill={running ? "#0a7a2a" : "#3a1a1a"} stroke={border} strokeWidth="1.2" />
         </g>
       </g>
-      <circle cx={x} cy={y} r="6" fill={running ? "#00cc44" : "#ff3333"} stroke="#3a4258" />
-      <text x={x} y={y + 50} textAnchor="middle" fill="#0f1626" fontSize="12" className="scada-value" fontWeight="700">{tag}</text>
-      <text x={x} y={y + 64} textAnchor="middle" fill="#0f1626" fontSize="10" className="scada-value">{subtitle}</text>
-      <rect x={x - 30} y={y + 70} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
-      <text x={x} y={y + 83} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
+      <text x={x} y={y + R + 20} textAnchor="middle" fill="#e6ebf5" fontSize="13" className="scada-value" fontWeight="700">{tag}</text>
+      <text x={x} y={y + R + 34} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{subtitle}</text>
+      {press !== undefined && <text x={x} y={y + R + 48} textAnchor="middle" fill="#9aa3b8" fontSize="10" className="scada-value">{press.toFixed(1)} bar · {running ? "2950" : "0"} rpm</text>}
+      <rect x={x - 30} y={y + R + 56} width="60" height="18" fill={running ? "#0a7a2a" : "#cc0000"} stroke="#3a4258" />
+      <text x={x} y={y + R + 69} textAnchor="middle" fill="#fff" fontSize="11" className="scada-value">{running ? "RUN" : "STOP"}</text>
     </g>
   );
 }
