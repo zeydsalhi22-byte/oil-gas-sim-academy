@@ -32,10 +32,11 @@ export function StoragePlantView() {
     return () => ro.disconnect();
   }, []);
 
-  const fit = box.w && box.h ? Math.min(box.w / VBW, box.h / VBH) : 1;
+  const ready = box.w > 0 && box.h > 0;
+  const fit = ready ? Math.min(box.w / VBW, box.h / VBH) : 1;
   const scale = fit * userZoom;
-  const tx = (box.w - VBW * scale) / 2 + pan.x;
-  const ty = (box.h - VBH * scale) / 2 + pan.y;
+  const tx = ready ? (box.w - VBW * scale) / 2 + pan.x : 0;
+  const ty = ready ? (box.h - VBH * scale) / 2 + pan.y : 0;
 
   const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
   const onDown = (e: React.PointerEvent) => {
