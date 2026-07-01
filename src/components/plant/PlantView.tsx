@@ -102,6 +102,10 @@ export function PlantView() {
             <stop offset="0" stopColor="#ff9933" />
             <stop offset="1" stopColor="#6a2e00" />
           </linearGradient>
+          <linearGradient id="gas" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#ffeb3b" />
+            <stop offset="1" stopColor="#f9a825" />
+          </linearGradient>
           <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
             <path d="M50 0H0V50" fill="none" stroke="#161c2c" strokeWidth="0.8" />
           </pattern>
@@ -157,6 +161,16 @@ export function PlantView() {
           {/* Liquid fill inside shell */}
           <clipPath id="sepClip"><rect x="291" y="171" width="188" height="289" /></clipPath>
           <g clipPath="url(#sepClip)">
+            {/* Gas phase (top) */}
+            <rect
+              x="290"
+              y="170"
+              width="190"
+              height={290 - (s.sepLevel / 100) * 280}
+              fill="url(#gas)"
+              opacity="0.35"
+            />
+            {/* Liquid phase (bottom) */}
             <rect
               x="290"
               y={460 - (s.sepLevel / 100) * 280}

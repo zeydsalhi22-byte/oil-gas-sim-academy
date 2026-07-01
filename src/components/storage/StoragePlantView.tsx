@@ -72,12 +72,12 @@ export function StoragePlantView() {
             <path d="M40 0H0V40" fill="none" stroke="#141a2a" strokeWidth="0.6" />
           </pattern>
           <linearGradient id="liquidOil" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#6aa9ff" />
-            <stop offset="1" stopColor="#1b4d8a" />
+            <stop offset="0" stopColor="#ffa64d" />
+            <stop offset="1" stopColor="#cc5500" />
           </linearGradient>
           <linearGradient id="gasFill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#8ebbff" />
-            <stop offset="1" stopColor="#2a5da6" />
+            <stop offset="0" stopColor="#ffeb3b" />
+            <stop offset="1" stopColor="#f9a825" />
           </linearGradient>
         </defs>
 
@@ -327,7 +327,7 @@ function Tank({ x, y, tag, level, temp, capacity, onClick }: { x: number; y: num
       </g>
       {/* level scale on left */}
       <rect x={x - 12} y={y} width="8" height={H} fill="#0f1626" stroke="#3a4258" />
-      <rect x={x - 12} y={lvlY} width="8" height={y + H - lvlY} fill={danger ? "#ff3333" : "#0099ff"} />
+      <rect x={x - 12} y={lvlY} width="8" height={y + H - lvlY} fill={danger ? "#ff3333" : "#ff8a00"} />
       {/* support legs */}
       <line x1={x + 20} y1={y + H} x2={x + 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
       <line x1={x + W - 20} y1={y + H} x2={x + W - 20} y2={y + H + 20} stroke="#3a4258" strokeWidth="3" />
