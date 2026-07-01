@@ -72,12 +72,12 @@ export function StoragePlantView() {
             <path d="M40 0H0V40" fill="none" stroke="#141a2a" strokeWidth="0.6" />
           </pattern>
           <linearGradient id="liquidOil" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#6aa9ff" />
-            <stop offset="1" stopColor="#1b4d8a" />
+            <stop offset="0" stopColor="#ffa64d" />
+            <stop offset="1" stopColor="#cc5500" />
           </linearGradient>
           <linearGradient id="gasFill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#8ebbff" />
-            <stop offset="1" stopColor="#2a5da6" />
+            <stop offset="0" stopColor="#ffeb3b" />
+            <stop offset="1" stopColor="#f9a825" />
           </linearGradient>
         </defs>
 
