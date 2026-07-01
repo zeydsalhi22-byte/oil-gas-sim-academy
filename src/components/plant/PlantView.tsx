@@ -102,6 +102,10 @@ export function PlantView() {
             <stop offset="0" stopColor="#ff9933" />
             <stop offset="1" stopColor="#6a2e00" />
           </linearGradient>
+          <linearGradient id="gas" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#ffeb3b" />
+            <stop offset="1" stopColor="#f9a825" />
+          </linearGradient>
           <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
             <path d="M50 0H0V50" fill="none" stroke="#161c2c" strokeWidth="0.8" />
           </pattern>
