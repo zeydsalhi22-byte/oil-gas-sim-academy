@@ -3,7 +3,7 @@ import { useStorageSim } from "@/lib/sim/storageStore";
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X, Smartphone } from "lucide-react";
 
 const VBW = 1800;
-const VBH = 950;
+const VBH = 1000;
 const BG = "#0a0e1a";
 const PIPE = "#5a6478";
 const OIL = "#8B4513";
