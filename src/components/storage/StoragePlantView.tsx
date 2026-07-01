@@ -3,12 +3,15 @@ import { useStorageSim } from "@/lib/sim/storageStore";
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, X, Smartphone } from "lucide-react";
 
 const VBW = 1800;
-const VBH = 1000;
+const VBH = 950;
 const BG = "#0a0e1a";
 const PIPE = "#5a6478";
-const OIL = "#8a4a1f";
-const GAS = "#2a3548";
+const OIL = "#8B4513";
+const GAS = "#666666";
+const WATER = "#1565C0";
 const STG = "#00aa44";
+type PipeKind = "crude" | "gas" | "water";
+const pipeColor = (k?: PipeKind) => (k === "crude" ? OIL : k === "gas" ? GAS : k === "water" ? WATER : PIPE);
 
 export function StoragePlantView() {
   const s = useStorageSim();
