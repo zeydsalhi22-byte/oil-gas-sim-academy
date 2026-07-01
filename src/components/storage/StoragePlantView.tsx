@@ -237,13 +237,16 @@ export function StoragePlantView() {
 
 /* ============== Primitives ============== */
 
-function Pipe({ d, dashed }: { d: string; dashed?: boolean }) {
-  return <path d={d} fill="none" stroke={PIPE} strokeWidth="3" strokeDasharray={dashed ? "8 6" : undefined} strokeLinecap="round" strokeLinejoin="round" />;
+function Pipe({ d, kind, thin }: { d: string; kind?: PipeKind; thin?: boolean }) {
+  const color = pipeColor(kind);
+  const dashed = kind === "crude" || kind === "gas";
+  const width = thin ? 1.5 : 2.5;
+  return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeDasharray={dashed ? "10 6" : undefined} strokeLinecap="round" strokeLinejoin="round" />;
 }
 
 function Arrow({ x, y, dir }: { x: number; y: number; dir: "right" | "down" }) {
   const pts = dir === "right" ? `${x - 6},${y - 5} ${x + 4},${y} ${x - 6},${y + 5}` : `${x - 5},${y - 6} ${x},${y + 4} ${x + 5},${y - 6}`;
-  return <polygon points={pts} fill={PIPE} />;
+  return <polygon points={pts} fill="#8a94a8" />;
 }
 
 function SensorBadge({ x, y, tag, value, color, onClick }: { x: number; y: number; tag: string; value: string; color: string; onClick?: (e: React.MouseEvent) => void }) {
