@@ -90,30 +90,30 @@ export function StoragePlantView() {
         <text x={VBW - 20} y="36" fill="#9aa3b8" fontSize="16" className="scada-value" textAnchor="end">GAS &amp; OIL STORAGE TERMINAL</text>
 
         {/* === PIPES === */}
-        {/* inlet manifold to tanks */}
-        <Pipe d="M 230 320 L 380 320 L 380 440" />
-        <Pipe d="M 230 320 L 720 320 L 720 440" />
         {/* manifold inlet stubs from left */}
-        <Pipe d="M 60 280 L 170 280 L 170 310" dashed />
-        <Pipe d="M 60 360 L 170 360 L 170 330" dashed />
+        <Pipe d="M 60 280 L 170 280 L 170 310" kind="gas" thin />
+        <Pipe d="M 60 360 L 170 360 L 170 330" kind="crude" thin />
+        {/* inlet manifold to crude tanks */}
+        <Pipe d="M 230 320 L 380 320 L 380 440" kind="crude" />
+        <Pipe d="M 380 320 L 720 320 L 720 440" kind="crude" />
         {/* tanks outlet to LV-301 */}
-        <Pipe d="M 380 800 L 380 870 L 1000 870" />
-        <Pipe d="M 720 800 L 720 870" />
+        <Pipe d="M 380 800 L 380 870 L 1000 870" kind="crude" />
+        <Pipe d="M 720 800 L 720 870" kind="crude" />
         {/* LV-301 to pump P-301 */}
-        <Pipe d="M 1060 870 L 1180 870" />
+        <Pipe d="M 1060 870 L 1180 870" kind="crude" />
         {/* P-301 to MS-301 to XV-301 to export */}
-        <Pipe d="M 1260 870 L 1360 870" />
-        <Pipe d="M 1440 870 L 1540 870" />
-        <Pipe d="M 1590 870 L 1740 870" />
+        <Pipe d="M 1260 870 L 1360 870" kind="crude" />
+        <Pipe d="M 1440 870 L 1540 870" kind="crude" />
+        <Pipe d="M 1590 870 L 1740 870" kind="crude" />
         {/* inlet manifold gas branch to spheres */}
-        <Pipe d="M 230 320 L 1000 320 L 1000 460" />
-        <Pipe d="M 1000 320 L 1320 320 L 1320 460" />
+        <Pipe d="M 230 320 L 1000 320 L 1000 460" kind="gas" />
+        <Pipe d="M 1000 320 L 1320 320 L 1320 460" kind="gas" />
         {/* spheres to PV-301 / gas pump */}
-        <Pipe d="M 1000 620 L 1000 700 L 1180 700" />
-        <Pipe d="M 1320 620 L 1320 700 L 1180 700" />
-        <Pipe d="M 1260 700 L 1360 700" />
-        <Pipe d="M 1440 700 L 1540 700" />
-        <Pipe d="M 1590 700 L 1740 700" />
+        <Pipe d="M 1000 620 L 1000 700 L 1180 700" kind="gas" />
+        <Pipe d="M 1320 620 L 1320 700 L 1180 700" kind="gas" />
+        <Pipe d="M 1260 700 L 1360 700" kind="gas" />
+        <Pipe d="M 1440 700 L 1540 700" kind="gas" />
+        <Pipe d="M 1590 700 L 1740 700" kind="gas" />
 
         {/* Direction arrows */}
         <Arrow x={300} y={320} dir="right" />
