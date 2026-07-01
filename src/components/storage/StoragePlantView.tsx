@@ -128,8 +128,8 @@ export function StoragePlantView() {
         <Arrow x={1670} y={700} dir="right" />
 
         {/* === Inlet sources labels === */}
-        <text x="60" y="270" fill="#0f1626" fontSize="13" className="scada-value">FROM GAS</text>
-        <text x="60" y="380" fill="#0f1626" fontSize="13" className="scada-value">FROM OIL</text>
+        <text x="60" y="270" fill="#9aa3b8" fontSize="13" className="scada-value">FROM GAS</text>
+        <text x="60" y="380" fill="#9aa3b8" fontSize="13" className="scada-value">FROM OIL</text>
 
         {/* === MAN-301 inlet manifold === */}
         <g onClick={sel("MAN-301")} className="cursor-pointer">
