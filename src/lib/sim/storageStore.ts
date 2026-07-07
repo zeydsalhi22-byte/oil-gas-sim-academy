@@ -148,15 +148,14 @@ export const useStorageSim = create<StorageState>((set, get) => ({
       lv301 = clamp(50 - (s.kp * e + s.ki * licInt + s.kd * de), 0, 100);
     }
 
-    // Drain via LV-301 (both tanks share drain header)
-    const drain1 = (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
-    const drain2 = (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
-    // Export pump takes from combined header only when running
-    const pumpOut = s.p301 ? EXPORT_PUMP : 0;
+    // Drain occurs only when export pump P-301 is running (LV-301 throttles flow to pump)
+    const pumpRunning = s.p301 ? 1 : 0;
+    const drain1 = pumpRunning * (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
+    const drain2 = pumpRunning * (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
 
     // dLevel% = (flow_m3h / CAP) * dtHours * 100
-    const dTk1 = ((inTk1 - drain1 - pumpOut * 0.5) / CAP) * dtHours * 100;
-    const dTk2 = ((inTk2 - drain2 - pumpOut * 0.5) / CAP) * dtHours * 100;
+    const dTk1 = ((inTk1 - drain1) / CAP) * dtHours * 100;
+    const dTk2 = ((inTk2 - drain2) / CAP) * dtHours * 100;
 
     let tk301Level = clamp(s.tk301Level + dTk1, 0, 100);
     let tk302Level = clamp(s.tk302Level + dTk2, 0, 100);
