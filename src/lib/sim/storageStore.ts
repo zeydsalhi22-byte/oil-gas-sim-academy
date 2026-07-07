@@ -203,6 +203,9 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     if (tk301Level > 85) push("LT-301-HH", "LT-301", "TK-301 HIGH-HIGH level", tk301Level, "critical");
     else if (tk301Level > 75) push("LT-301-HI", "LT-301", "TK-301 high level", tk301Level, "high");
     if (tk302Level > 85) push("LT-302-HH", "LT-302", "TK-302 HIGH-HIGH level", tk302Level, "critical");
+    else if (tk302Level > 75) push("LT-302-HI", "LT-302", "TK-302 high level", tk302Level, "high");
+    if (tk301Level < 15) push("LT-301-LO", "LT-301", "TK-301 LOW level", tk301Level, "high");
+    if (tk302Level < 15) push("LT-302-LO", "LT-302", "TK-302 LOW level", tk302Level, "high");
     if (s301Press > 18) push("PT-302-HH", "PT-302", "S-301 high pressure", s301Press, "critical");
     if (s302Press > 18) push("PT-303-HH", "PT-303", "S-302 high pressure", s302Press, "critical");
     if (exportCrudeActual < 50 && s.p301) push("FT-301-LO", "FT-301", "Export flow low", exportCrudeActual, "warning");
