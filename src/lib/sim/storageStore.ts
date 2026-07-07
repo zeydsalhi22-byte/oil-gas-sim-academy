@@ -78,11 +78,11 @@ interface StorageState {
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export const useStorageSim = create<StorageState>((set, get) => ({
-  tk301Level: 62,
-  tk302Level: 48,
+  tk301Level: 55,
+  tk302Level: 45,
   tk301Temp: 48,
   tk302Temp: 46,
-  tankCapacity: 12000,
+  tankCapacity: 7000,
 
   s301Press: 14.8,
   s302Press: 15.2,
@@ -123,34 +123,46 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     const dt = 0.5;
     const noise = () => (Math.random() - 0.5) * 0.4;
 
-    // Tank inflow distributed via MOVs
-    const inSplit = s.mov141 + s.mov142 || 1;
-    const inTk1 = s.inletFlow * (s.mov141 / inSplit) * 0.55; // 55% of inlet = crude
-    const inTk2 = s.inletFlow * (s.mov142 / inSplit) * 0.55;
+    // Tank capacity & flow constants (m³/h)
+    const CAP = 7000;
+    const MAX_DRAIN = 400;
+    const EXPORT_PUMP = 180; void EXPORT_PUMP;
+    const dtHours = dt / 3600; // 0.5s -> hours
 
-    // PID for LIC-301
+    // Split inlet between two tanks via MOVs
+    const inSplit = s.mov141 + s.mov142 || 1;
+    const inTk1 = s.inletFlow * (s.mov141 / inSplit); // m³/h
+    const inTk2 = s.inletFlow * (s.mov142 / inSplit);
+
+    // PID for LIC-301 (SP - PV convention; error>0 -> level low -> close drain)
     let lv301 = s.lv301;
     let licInt = s.licInt;
     let licPrev = s.licPrev;
     if (s.licAuto) {
       const pv = s.tk301Level;
-      const e = pv - s.licSP; // err positive => level high => open valve more
-      licInt = clamp(licInt + e * dt, -100, 100);
+      const e = s.licSP - pv;
+      licInt = clamp(licInt + e * dt, -200, 200);
       const de = (e - s.licPrev) / dt;
       licPrev = e;
-      lv301 = clamp(45 + s.kp * e + s.ki * licInt + s.kd * de, 0, 100);
+      // level low (e>0) -> smaller lv301 (drain less); level high (e<0) -> larger lv301
+      lv301 = clamp(50 - (s.kp * e + s.ki * licInt + s.kd * de), 0, 100);
     }
 
-    // Tank outflow via LV-301 + pump P-301 + export
-    const pumpFactor = s.p301 ? 1 : 0;
-    const outTk1 = (lv301 / 100) * pumpFactor * (s.xv301 / 100) * (s.exportCrude / 60) * 0.55;
-    const outTk2 = (lv301 / 100) * pumpFactor * (s.xv301 / 100) * (s.exportCrude / 60) * 0.45;
+    // Drain occurs only when export pump P-301 is running (LV-301 throttles flow to pump)
+    const pumpRunning = s.p301 ? 1 : 0;
+    const drain1 = pumpRunning * (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
+    const drain2 = pumpRunning * (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
 
-    let tk301Level = clamp(s.tk301Level + (inTk1 - outTk1) * dt * 0.05, 0, 100);
-    let tk302Level = clamp(s.tk302Level + (inTk2 - outTk2) * dt * 0.05, 0, 100);
+    // dLevel% = (flow_m3h / CAP) * dtHours * 100
+    const dTk1 = ((inTk1 - drain1) / CAP) * dtHours * 100;
+    const dTk2 = ((inTk2 - drain2) / CAP) * dtHours * 100;
+
+    let tk301Level = clamp(s.tk301Level + dTk1, 0, 100);
+    let tk302Level = clamp(s.tk302Level + dTk2, 0, 100);
 
     // LT sensor failure: freeze reading at 55%
     if (s.fault === "lt_sensor") tk301Level = 55;
+
 
     // Cavitation: pump output oscillates
     let exportCrudeActual = s.p301 ? s.exportCrude : 0;
@@ -191,6 +203,9 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     if (tk301Level > 85) push("LT-301-HH", "LT-301", "TK-301 HIGH-HIGH level", tk301Level, "critical");
     else if (tk301Level > 75) push("LT-301-HI", "LT-301", "TK-301 high level", tk301Level, "high");
     if (tk302Level > 85) push("LT-302-HH", "LT-302", "TK-302 HIGH-HIGH level", tk302Level, "critical");
+    else if (tk302Level > 75) push("LT-302-HI", "LT-302", "TK-302 high level", tk302Level, "high");
+    if (tk301Level < 15) push("LT-301-LO", "LT-301", "TK-301 LOW level", tk301Level, "high");
+    if (tk302Level < 15) push("LT-302-LO", "LT-302", "TK-302 LOW level", tk302Level, "high");
     if (s301Press > 18) push("PT-302-HH", "PT-302", "S-301 high pressure", s301Press, "critical");
     if (s302Press > 18) push("PT-303-HH", "PT-303", "S-302 high pressure", s302Press, "critical");
     if (exportCrudeActual < 50 && s.p301) push("FT-301-LO", "FT-301", "Export flow low", exportCrudeActual, "warning");
