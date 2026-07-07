@@ -78,11 +78,11 @@ interface StorageState {
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export const useStorageSim = create<StorageState>((set, get) => ({
-  tk301Level: 62,
-  tk302Level: 48,
+  tk301Level: 55,
+  tk302Level: 45,
   tk301Temp: 48,
   tk302Temp: 46,
-  tankCapacity: 12000,
+  tankCapacity: 7000,
 
   s301Press: 14.8,
   s302Press: 15.2,
