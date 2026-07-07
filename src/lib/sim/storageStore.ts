@@ -123,34 +123,47 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     const dt = 0.5;
     const noise = () => (Math.random() - 0.5) * 0.4;
 
-    // Tank inflow distributed via MOVs
-    const inSplit = s.mov141 + s.mov142 || 1;
-    const inTk1 = s.inletFlow * (s.mov141 / inSplit) * 0.55; // 55% of inlet = crude
-    const inTk2 = s.inletFlow * (s.mov142 / inSplit) * 0.55;
+    // Tank capacity & flow constants (m³/h)
+    const CAP = 7000;
+    const MAX_DRAIN = 400;
+    const EXPORT_PUMP = 180;
+    const dtHours = dt / 3600; // 0.5s -> hours
 
-    // PID for LIC-301
+    // Split inlet between two tanks via MOVs
+    const inSplit = s.mov141 + s.mov142 || 1;
+    const inTk1 = s.inletFlow * (s.mov141 / inSplit); // m³/h
+    const inTk2 = s.inletFlow * (s.mov142 / inSplit);
+
+    // PID for LIC-301 (SP - PV convention; error>0 -> level low -> close drain)
     let lv301 = s.lv301;
     let licInt = s.licInt;
     let licPrev = s.licPrev;
     if (s.licAuto) {
       const pv = s.tk301Level;
-      const e = pv - s.licSP; // err positive => level high => open valve more
-      licInt = clamp(licInt + e * dt, -100, 100);
+      const e = s.licSP - pv;
+      licInt = clamp(licInt + e * dt, -200, 200);
       const de = (e - s.licPrev) / dt;
       licPrev = e;
-      lv301 = clamp(45 + s.kp * e + s.ki * licInt + s.kd * de, 0, 100);
+      // level low (e>0) -> smaller lv301 (drain less); level high (e<0) -> larger lv301
+      lv301 = clamp(50 - (s.kp * e + s.ki * licInt + s.kd * de), 0, 100);
     }
 
-    // Tank outflow via LV-301 + pump P-301 + export
-    const pumpFactor = s.p301 ? 1 : 0;
-    const outTk1 = (lv301 / 100) * pumpFactor * (s.xv301 / 100) * (s.exportCrude / 60) * 0.55;
-    const outTk2 = (lv301 / 100) * pumpFactor * (s.xv301 / 100) * (s.exportCrude / 60) * 0.45;
+    // Drain via LV-301 (both tanks share drain header)
+    const drain1 = (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
+    const drain2 = (lv301 / 100) * MAX_DRAIN * (s.xv301 / 100);
+    // Export pump takes from combined header only when running
+    const pumpOut = s.p301 ? EXPORT_PUMP : 0;
 
-    let tk301Level = clamp(s.tk301Level + (inTk1 - outTk1) * dt * 0.05, 0, 100);
-    let tk302Level = clamp(s.tk302Level + (inTk2 - outTk2) * dt * 0.05, 0, 100);
+    // dLevel% = (flow_m3h / CAP) * dtHours * 100
+    const dTk1 = ((inTk1 - drain1 - pumpOut * 0.5) / CAP) * dtHours * 100;
+    const dTk2 = ((inTk2 - drain2 - pumpOut * 0.5) / CAP) * dtHours * 100;
+
+    let tk301Level = clamp(s.tk301Level + dTk1, 0, 100);
+    let tk302Level = clamp(s.tk302Level + dTk2, 0, 100);
 
     // LT sensor failure: freeze reading at 55%
     if (s.fault === "lt_sensor") tk301Level = 55;
+
 
     // Cavitation: pump output oscillates
     let exportCrudeActual = s.p301 ? s.exportCrude : 0;
