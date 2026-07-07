@@ -126,7 +126,7 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     // Tank capacity & flow constants (m³/h)
     const CAP = 7000;
     const MAX_DRAIN = 400;
-    const EXPORT_PUMP = 180;
+    const EXPORT_PUMP = 180; void EXPORT_PUMP;
     const dtHours = dt / 3600; // 0.5s -> hours
 
     // Split inlet between two tanks via MOVs
