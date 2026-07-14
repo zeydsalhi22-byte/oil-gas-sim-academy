@@ -95,9 +95,20 @@ interface OilState {
   toggleDehy: () => void;
   setDehyKV: (v: number) => void;
   setController: (
-    p: Partial<Pick<OilState,
-      "lic201Auto" | "lic201SP" | "lic202Auto" | "lic202SP" |
-      "fic201Auto" | "fic201SP" | "tic201Auto" | "tic201SP" | "utilityFlow">>
+    p: Partial<
+      Pick<
+        OilState,
+        | "lic201Auto"
+        | "lic201SP"
+        | "lic202Auto"
+        | "lic202SP"
+        | "fic201Auto"
+        | "fic201SP"
+        | "tic201Auto"
+        | "tic201SP"
+        | "utilityFlow"
+      >
+    >,
   ) => void;
   ackAlarm: (id: string) => void;
   injectFault: (f: OilFault) => void;
@@ -146,12 +157,19 @@ export const useOilSim = create<OilState>((set, get) => ({
 
   wtOilInWater: 28,
 
-  lic201Auto: true, lic201SP: 50,
-  lic202Auto: true, lic202SP: 35,
-  fic201Auto: true, fic201SP: 180,
-  tic201Auto: true, tic201SP: 95,
+  lic201Auto: true,
+  lic201SP: 50,
+  lic202Auto: true,
+  lic202SP: 35,
+  fic201Auto: true,
+  fic201SP: 180,
+  tic201Auto: true,
+  tic201SP: 95,
 
-  lv201: 50, lv202: 40, fv201: 60, exportValve: 55,
+  lv201: 50,
+  lv202: 40,
+  fv201: 60,
+  exportValve: 55,
   inletFlow: 200,
   fault: "none",
   alarms: [],
@@ -167,7 +185,8 @@ export const useOilSim = create<OilState>((set, get) => ({
   toggleDehy: () => set((s) => ({ dehydratorOn: !s.dehydratorOn })),
   setDehyKV: (v) => set({ dehydratorKV: v }),
   setController: (p) => set((s) => ({ ...s, ...p })),
-  ackAlarm: (id) => set((s) => ({ alarms: s.alarms.map((a) => a.id === id ? { ...a, ack: true } : a) })),
+  ackAlarm: (id) =>
+    set((s) => ({ alarms: s.alarms.map((a) => (a.id === id ? { ...a, ack: true } : a)) })),
   injectFault: (f) => set({ fault: f }),
 
   tick: () => {
@@ -236,16 +255,16 @@ export const useOilSim = create<OilState>((set, get) => ({
       }
     } else {
       pumpRpm = Math.max(0, pumpRpm - 200);
-      pumpFlow = 0; pumpDP = 0; pumpEff = 0;
+      pumpFlow = 0;
+      pumpDP = 0;
+      pumpEff = 0;
     }
     let crudeFlow = pumpFlow;
 
     // Heat exchanger
     let hxFouling = clamp(s.hxFouling + (s.fault === "hx_fouling" ? 0.002 : 0.00005), 0.01, 0.6);
     const U = 800 * (1 - hxFouling); // W/m²K
-    const targetOut = s.tic201Auto
-      ? s.tic201SP
-      : s.hxCrudeIn + (s.utilityFlow / 100) * 50;
+    const targetOut = s.tic201Auto ? s.tic201SP : s.hxCrudeIn + (s.utilityFlow / 100) * 50;
     let hxCrudeIn = clamp(sepTemp - 5 + noise() * 0.3, 30, 100);
     let utilityFlow = s.utilityFlow;
     if (s.tic201Auto) {
@@ -255,13 +274,16 @@ export const useOilSim = create<OilState>((set, get) => ({
     let hxCrudeOut = clamp(
       hxCrudeIn + (utilityFlow / 100) * 60 * (1 - hxFouling) + noise() * 0.3,
       hxCrudeIn,
-      160
+      160,
     );
     if (s.tic201Auto) hxCrudeOut = clamp(hxCrudeOut * 0.5 + targetOut * 0.5, hxCrudeIn, 160);
     const dT1 = 140 - hxCrudeOut;
     const dT2 = 100 - hxCrudeIn;
-    const hxLMTD = dT1 > 0 && dT2 > 0 && dT1 !== dT2 ? (dT1 - dT2) / Math.log(dT1 / dT2) : Math.max(1, (dT1 + dT2) / 2);
-    const hxDuty = clamp(U * 50 * hxLMTD / 1000, 0, 5000);
+    const hxLMTD =
+      dT1 > 0 && dT2 > 0 && dT1 !== dT2
+        ? (dT1 - dT2) / Math.log(dT1 / dT2)
+        : Math.max(1, (dT1 + dT2) / 2);
+    const hxDuty = clamp((U * 50 * hxLMTD) / 1000, 0, 5000);
 
     // Dehydrator
     let bswIn = bsw;
@@ -279,35 +301,85 @@ export const useOilSim = create<OilState>((set, get) => ({
     let vaporP = clamp(0.3 + (tankTemp - 60) * 0.02, 0.1, 2);
 
     // Water treatment
-    let wtOilInWater = clamp(30 + bsw * 3 + (s.fault === "emulsion" ? 25 : 0) + noise() * 2, 5, 200);
+    let wtOilInWater = clamp(
+      30 + bsw * 3 + (s.fault === "emulsion" ? 25 : 0) + noise() * 2,
+      5,
+      200,
+    );
 
     // Alarms
     const alarms = [...s.alarms];
     const push = (id: string, tag: string, desc: string, value: number, level: AlarmLevel) => {
-      if (!alarms.find((a) => a.id === id)) alarms.unshift({ id, tag, description: desc, value, level, ts: Date.now(), ack: false });
+      if (!alarms.find((a) => a.id === id))
+        alarms.unshift({ id, tag, description: desc, value, level, ts: Date.now(), ack: false });
     };
     if (bswOut > 2) push("AT-201-HI", "AT-201", "BS&W HIGH — crude off-spec", bswOut, "high");
-    if (waterLevel > 80) push("LT-202-HI", "LT-202", "Separator water level HIGH", waterLevel, "high");
+    if (waterLevel > 80)
+      push("LT-202-HI", "LT-202", "Separator water level HIGH", waterLevel, "high");
     if (oilLevel > 85) push("LT-201-HI", "LT-201", "Separator oil level HIGH", oilLevel, "high");
-    if (pumpRunning && pumpEff < 40) push("P-201-CAV", "P-201", "Pump cavitation warning", pumpEff, "high");
+    if (pumpRunning && pumpEff < 40)
+      push("P-201-CAV", "P-201", "Pump cavitation warning", pumpEff, "high");
     if (tankLevel > 90) push("LT-203-HH", "LT-203", "Tank HIGH-HIGH level", tankLevel, "critical");
-    if (hxCrudeOut < 70) push("TT-203-LO", "TT-203", "Low export temperature", hxCrudeOut, "warning");
-    if (wtOilInWater > 40) push("WT-OIW", "WT-201", "Oil-in-water above discharge limit", wtOilInWater, "high");
-    if (s.fault !== "none") push(`FAULT-${s.fault}`, s.fault.toUpperCase(), `Active fault: ${s.fault.replace("_", " ")}`, 0, "critical");
+    if (hxCrudeOut < 70)
+      push("TT-203-LO", "TT-203", "Low export temperature", hxCrudeOut, "warning");
+    if (wtOilInWater > 40)
+      push("WT-OIW", "WT-201", "Oil-in-water above discharge limit", wtOilInWater, "high");
+    if (s.fault !== "none")
+      push(
+        `FAULT-${s.fault}`,
+        s.fault.toUpperCase(),
+        `Active fault: ${s.fault.replace("_", " ")}`,
+        0,
+        "critical",
+      );
 
-    const trend = [...s.trend, {
-      t: Date.now(), wellPressure, oilLevel, waterLevel, crudeFlow, bsw: bswOut,
-      tankLevel, exportTemp: hxCrudeOut, pumpEff, pumpDP, hxOut: hxCrudeOut,
-    }].slice(-60);
+    const trend = [
+      ...s.trend,
+      {
+        t: Date.now(),
+        wellPressure,
+        oilLevel,
+        waterLevel,
+        crudeFlow,
+        bsw: bswOut,
+        tankLevel,
+        exportTemp: hxCrudeOut,
+        pumpEff,
+        pumpDP,
+        hxOut: hxCrudeOut,
+      },
+    ].slice(-60);
 
     set({
-      wellPressure, upstreamP, downstreamP,
-      sepPressure, sepTemp, oilLevel, waterLevel, bsw, sepGasFlow,
-      lv201, lv202,
-      pumpRunning, pumpRpm, pumpDP, pumpFlow, pumpEff, crudeFlow,
-      hxCrudeIn, hxCrudeOut, hxDuty, hxLMTD, hxFouling, utilityFlow,
-      bswIn, bswOut,
-      tankLevel, tankVolume, tankTemp, vaporP,
+      wellPressure,
+      upstreamP,
+      downstreamP,
+      sepPressure,
+      sepTemp,
+      oilLevel,
+      waterLevel,
+      bsw,
+      sepGasFlow,
+      lv201,
+      lv202,
+      pumpRunning,
+      pumpRpm,
+      pumpDP,
+      pumpFlow,
+      pumpEff,
+      crudeFlow,
+      hxCrudeIn,
+      hxCrudeOut,
+      hxDuty,
+      hxLMTD,
+      hxFouling,
+      utilityFlow,
+      bswIn,
+      bswOut,
+      tankLevel,
+      tankVolume,
+      tankTemp,
+      vaporP,
       wtOilInWater,
       alarms: alarms.slice(0, 30),
       trend,

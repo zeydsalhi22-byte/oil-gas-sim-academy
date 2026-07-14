@@ -38,10 +38,10 @@ interface StorageState {
   // valves
   mov141: number; // tk301 inlet
   mov142: number; // tk302 inlet
-  lv301: number;  // tank outlet control
-  pv301: number;  // sphere pressure ctrl
-  xv301: number;  // crude export
-  xv302: number;  // gas export
+  lv301: number; // tank outlet control
+  pv301: number; // sphere pressure ctrl
+  xv301: number; // crude export
+  xv302: number; // gas export
   psv301Open: boolean;
   psv302Open: boolean;
 
@@ -52,7 +52,9 @@ interface StorageState {
   // PID LIC-301
   licAuto: boolean;
   licSP: number;
-  kp: number; ki: number; kd: number;
+  kp: number;
+  ki: number;
+  kd: number;
   licInt: number;
   licPrev: number;
 
@@ -95,13 +97,25 @@ export const useStorageSim = create<StorageState>((set, get) => ({
   exportGas: 108,
   dailyExport: 4320,
 
-  mov141: 100, mov142: 100, lv301: 45, pv301: 55, xv301: 100, xv302: 100,
-  psv301Open: false, psv302Open: false,
+  mov141: 100,
+  mov142: 100,
+  lv301: 45,
+  pv301: 55,
+  xv301: 100,
+  xv302: 100,
+  psv301Open: false,
+  psv302Open: false,
 
-  p301: true, p302: true,
+  p301: true,
+  p302: true,
 
-  licAuto: true, licSP: 60, kp: 1.5, ki: 0.2, kd: 0.3,
-  licInt: 0, licPrev: 0,
+  licAuto: true,
+  licSP: 60,
+  kp: 1.5,
+  ki: 0.2,
+  kd: 0.3,
+  licInt: 0,
+  licPrev: 0,
 
   fault: "none",
   alarms: [],
@@ -115,7 +129,8 @@ export const useStorageSim = create<StorageState>((set, get) => ({
   setExportCrude: (v) => set({ exportCrude: v }),
   startPump: (p) => set({ [p]: true } as any),
   stopPump: (p) => set({ [p]: false } as any),
-  ackAlarm: (id) => set((s) => ({ alarms: s.alarms.map((a) => (a.id === id ? { ...a, ack: true } : a)) })),
+  ackAlarm: (id) =>
+    set((s) => ({ alarms: s.alarms.map((a) => (a.id === id ? { ...a, ack: true } : a)) })),
   injectFault: (f) => set({ fault: f, licInt: 0 }),
 
   tick: () => {
@@ -126,7 +141,8 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     // Tank capacity & flow constants (m³/h)
     const CAP = 7000;
     const MAX_DRAIN = 400;
-    const EXPORT_PUMP = 180; void EXPORT_PUMP;
+    const EXPORT_PUMP = 180;
+    void EXPORT_PUMP;
     const dtHours = dt / 3600; // 0.5s -> hours
 
     // Split inlet between two tanks via MOVs
@@ -163,7 +179,6 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     // LT sensor failure: freeze reading at 55%
     if (s.fault === "lt_sensor") tk301Level = 55;
 
-
     // Cavitation: pump output oscillates
     let exportCrudeActual = s.p301 ? s.exportCrude : 0;
     if (s.fault === "pump_cav" && s.p301) exportCrudeActual *= 0.5 + Math.random() * 0.6;
@@ -193,35 +208,63 @@ export const useStorageSim = create<StorageState>((set, get) => ({
     const tk302Temp = s.tk302Temp + (46 - s.tk302Temp) * 0.05 + noise() * 0.1;
 
     // Daily export integrator
-    const dailyExport = clamp(s.dailyExport + (exportCrudeActual / 7200), 0, 99999);
+    const dailyExport = clamp(s.dailyExport + exportCrudeActual / 7200, 0, 99999);
 
     // Alarms
     const alarms = [...s.alarms];
-    const push = (id: string, tag: string, description: string, value: number, level: AlarmLevel) => {
-      if (!alarms.find((a) => a.id === id)) alarms.unshift({ id, tag, description, value, level, ts: Date.now(), ack: false });
+    const push = (
+      id: string,
+      tag: string,
+      description: string,
+      value: number,
+      level: AlarmLevel,
+    ) => {
+      if (!alarms.find((a) => a.id === id))
+        alarms.unshift({ id, tag, description, value, level, ts: Date.now(), ack: false });
     };
-    if (tk301Level > 85) push("LT-301-HH", "LT-301", "TK-301 HIGH-HIGH level", tk301Level, "critical");
+    if (tk301Level > 85)
+      push("LT-301-HH", "LT-301", "TK-301 HIGH-HIGH level", tk301Level, "critical");
     else if (tk301Level > 75) push("LT-301-HI", "LT-301", "TK-301 high level", tk301Level, "high");
-    if (tk302Level > 85) push("LT-302-HH", "LT-302", "TK-302 HIGH-HIGH level", tk302Level, "critical");
+    if (tk302Level > 85)
+      push("LT-302-HH", "LT-302", "TK-302 HIGH-HIGH level", tk302Level, "critical");
     else if (tk302Level > 75) push("LT-302-HI", "LT-302", "TK-302 high level", tk302Level, "high");
     if (tk301Level < 15) push("LT-301-LO", "LT-301", "TK-301 LOW level", tk301Level, "high");
     if (tk302Level < 15) push("LT-302-LO", "LT-302", "TK-302 LOW level", tk302Level, "high");
     if (s301Press > 18) push("PT-302-HH", "PT-302", "S-301 high pressure", s301Press, "critical");
     if (s302Press > 18) push("PT-303-HH", "PT-303", "S-302 high pressure", s302Press, "critical");
-    if (exportCrudeActual < 50 && s.p301) push("FT-301-LO", "FT-301", "Export flow low", exportCrudeActual, "warning");
-    if (s.fault !== "none") push(`FAULT-${s.fault}`, s.fault.toUpperCase(), `Active fault: ${s.fault}`, 0, "critical");
+    if (exportCrudeActual < 50 && s.p301)
+      push("FT-301-LO", "FT-301", "Export flow low", exportCrudeActual, "warning");
+    if (s.fault !== "none")
+      push(`FAULT-${s.fault}`, s.fault.toUpperCase(), `Active fault: ${s.fault}`, 0, "critical");
 
-    const trend = [...s.trend, {
-      t: Date.now(), tk301: tk301Level, tk302: tk302Level,
-      s301: s301Press, s302: s302Press,
-      inlet: s.inletFlow, exportCrude: exportCrudeActual, exportGas: gasOut,
-    }].slice(-60);
+    const trend = [
+      ...s.trend,
+      {
+        t: Date.now(),
+        tk301: tk301Level,
+        tk302: tk302Level,
+        s301: s301Press,
+        s302: s302Press,
+        inlet: s.inletFlow,
+        exportCrude: exportCrudeActual,
+        exportGas: gasOut,
+      },
+    ].slice(-60);
 
     set({
-      tk301Level, tk302Level, tk301Temp, tk302Temp,
-      s301Level, s302Level, s301Press, s302Press,
-      psv301Open, psv302Open,
-      lv301, licInt, licPrev,
+      tk301Level,
+      tk302Level,
+      tk301Temp,
+      tk302Temp,
+      s301Level,
+      s302Level,
+      s301Press,
+      s302Press,
+      psv301Open,
+      psv302Open,
+      lv301,
+      licInt,
+      licPrev,
       dailyExport,
       alarms: alarms.slice(0, 30),
       trend,
