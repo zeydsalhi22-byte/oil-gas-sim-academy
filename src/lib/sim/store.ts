@@ -66,7 +66,9 @@ interface SimState {
   selected: string | null;
   setSelected: (id: string | null) => void;
   setInletFlow: (n: number) => void;
-  setPID: (p: Partial<{ Kp: number; Ki: number; Kd: number; setpoint: number; pidAuto: boolean }>) => void;
+  setPID: (
+    p: Partial<{ Kp: number; Ki: number; Kd: number; setpoint: number; pidAuto: boolean }>,
+  ) => void;
   setValve: (which: "pv" | "fv" | "lv", v: number) => void;
   startCompressor: () => void;
   stopCompressor: () => void;
@@ -114,10 +116,16 @@ export const useSim = create<SimState>((set, get) => ({
   setInletFlow: (n) => set({ inletFlow: n }),
   setPID: (p) => set((s) => ({ ...s, ...p })),
   setValve: (which, v) =>
-    set((s) => ({ ...(which === "pv" ? { pvOpen: v } : which === "fv" ? { fvOpen: v } : { lvOpen: v }) }) as Partial<SimState>),
+    set(
+      (s) =>
+        ({
+          ...(which === "pv" ? { pvOpen: v } : which === "fv" ? { fvOpen: v } : { lvOpen: v }),
+        }) as Partial<SimState>,
+    ),
   startCompressor: () => set({ compRunning: true }),
   stopCompressor: () => set({ compRunning: false, rpm: 0, discharge: 38, power: 0 }),
-  ackAlarm: (id) => set((s) => ({ alarms: s.alarms.map((a) => (a.id === id ? { ...a, ack: true } : a)) })),
+  ackAlarm: (id) =>
+    set((s) => ({ alarms: s.alarms.map((a) => (a.id === id ? { ...a, ack: true } : a)) })),
   injectFault: (f, loc = "") => set({ fault: f, faultLocation: loc }),
 
   tick: () => {
@@ -173,7 +181,11 @@ export const useSim = create<SimState>((set, get) => ({
       compTemp = Math.max(40, s.compTemp - 1);
       power = 0;
     }
-    let purity = clamp(99 - (gasFlow > 1800 ? (gasFlow - 1800) * 0.005 : 0) + noise() * 0.05, 90, 99.9);
+    let purity = clamp(
+      99 - (gasFlow > 1800 ? (gasFlow - 1800) * 0.005 : 0) + noise() * 0.05,
+      90,
+      99.9,
+    );
 
     // Faults
     if (s.fault === "pt_fail") discharge = 0;
@@ -186,28 +198,60 @@ export const useSim = create<SimState>((set, get) => ({
 
     // Alarms
     const alarms: Alarm[] = [...s.alarms];
-    const pushAlarm = (id: string, tag: string, description: string, value: number, level: AlarmLevel) => {
+    const pushAlarm = (
+      id: string,
+      tag: string,
+      description: string,
+      value: number,
+      level: AlarmLevel,
+    ) => {
       if (!alarms.find((a) => a.id === id)) {
         alarms.unshift({ id, tag, description, value, level, ts: Date.now(), ack: false });
       }
     };
     if (sepLevel > 85) pushAlarm("LT-101-HI", "LT-101", "Separator level HIGH", sepLevel, "high");
     if (sepLevel < 15) pushAlarm("LT-101-LO", "LT-101", "Separator level LOW", sepLevel, "warning");
-    if (discharge > 130) pushAlarm("PT-103-HH", "PT-103", "Discharge pressure HIGH-HIGH", discharge, "critical");
-    if (compTemp > 120) pushAlarm("TT-102-HI", "TT-102", "Compressor temperature HIGH", compTemp, "high");
-    if (s.fault !== "none") pushAlarm(`FAULT-${s.fault}`, s.fault.toUpperCase(), `Fault detected: ${s.fault}`, 0, "critical");
+    if (discharge > 130)
+      pushAlarm("PT-103-HH", "PT-103", "Discharge pressure HIGH-HIGH", discharge, "critical");
+    if (compTemp > 120)
+      pushAlarm("TT-102-HI", "TT-102", "Compressor temperature HIGH", compTemp, "high");
+    if (s.fault !== "none")
+      pushAlarm(
+        `FAULT-${s.fault}`,
+        s.fault.toUpperCase(),
+        `Fault detected: ${s.fault}`,
+        0,
+        "critical",
+      );
     // trim
     const trimmed = alarms.slice(0, 30);
 
     // trend
     const t = Date.now();
-    const trend = [...s.trend, { t, wellPressure, sepLevel, sepPressure, discharge, rpm, purity, flow: gasFlow }].slice(-60);
+    const trend = [
+      ...s.trend,
+      { t, wellPressure, sepLevel, sepPressure, discharge, rpm, purity, flow: gasFlow },
+    ].slice(-60);
 
     set({
-      wellPressure, wellTemp, sepLevel, sepPressure, sepTemp, gasFlow, liqFlow,
-      suction, discharge, rpm, compTemp, power, purity,
-      pvOpen, integral, prevErr,
-      alarms: trimmed, trend,
+      wellPressure,
+      wellTemp,
+      sepLevel,
+      sepPressure,
+      sepTemp,
+      gasFlow,
+      liqFlow,
+      suction,
+      discharge,
+      rpm,
+      compTemp,
+      power,
+      purity,
+      pvOpen,
+      integral,
+      prevErr,
+      alarms: trimmed,
+      trend,
     });
   },
 }));
@@ -220,7 +264,13 @@ export function startSimTicker() {
   __simTickHandle = setInterval(() => useSim.getState().tick(), 500);
 }
 
-export function levelOf(value: number, lo: number, hi: number, llo?: number, hhi?: number): AlarmLevel {
+export function levelOf(
+  value: number,
+  lo: number,
+  hi: number,
+  llo?: number,
+  hhi?: number,
+): AlarmLevel {
   if (hhi !== undefined && value >= hhi) return "critical";
   if (llo !== undefined && value <= llo) return "critical";
   if (value >= hi || value <= lo) return "high";
