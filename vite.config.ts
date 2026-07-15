@@ -7,7 +7,7 @@ export default defineConfig({
     spa: {
       enabled: true,
       // Emit the SPA shell as index.html at the dist root so Capacitor can serve it directly.
-      prerender: { outputPath: "/" },
+      prerender: { outputPath: "/index" },
     },
     server: { entry: "server" },
   },
