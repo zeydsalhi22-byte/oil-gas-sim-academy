@@ -8,8 +8,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "OilSim Academy — Interactive Oil & Gas Training" },
       { name: "description", content: "Hands-on simulator for process control, PID tuning, sensors and SCADA for L3 Electronics/Instrumentation students." },
-      { property: "og:title", content: "OilSim Academy" },
-      { property: "og:description", content: "Interactive oil & gas industrial simulation for engineering students." },
+      { property: "og:title", content: "OilSim Academy — Interactive Oil & Gas Training" },
+      { property: "og:description", content: "Hands-on simulator for process control, PID tuning, sensors and SCADA for L3 Electronics/Instrumentation students." },
     ],
   }),
   component: Home,

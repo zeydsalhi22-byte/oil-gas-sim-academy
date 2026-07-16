@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "OilSim Academy — Interactive Oil & Gas Training" },
+      { name: "description", content: "Hands-on simulator for process control, PID tuning, sensors and SCADA for L3 Electronics/Instrumentation students." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "OilSim Academy — Interactive Oil & Gas Training" },
+      { property: "og:description", content: "Hands-on simulator for process control, PID tuning, sensors and SCADA for L3 Electronics/Instrumentation students." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "OilSim Academy — Interactive Oil & Gas Training" },
+      { name: "twitter:description", content: "Hands-on simulator for process control, PID tuning, sensors and SCADA for L3 Electronics/Instrumentation students." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/33edc8f2-8e75-4676-9e12-ffb55b39dfe6/id-preview-21e1521c--cdffb985-1598-40a3-9830-65ad6814ac23.lovable.app-1784197361512.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/33edc8f2-8e75-4676-9e12-ffb55b39dfe6/id-preview-21e1521c--cdffb985-1598-40a3-9830-65ad6814ac23.lovable.app-1784197361512.png" },
     ],
     links: [
       {
